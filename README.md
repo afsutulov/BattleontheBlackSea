@@ -23,11 +23,13 @@ The original mouse input is also supported. Enter the captain's name using Latin
 
 ## Build
 
-Install **Go 1.24 or newer**. Run commands from the project root. The first build downloads the dependencies listed in `go.mod` and `go.sum`.
+Install **Go 1.25 or newer**. **Ebitengine 2.10.5** and its dependencies are pinned in `go.mod` and `go.sum`. Run commands from the project root. The first build downloads these dependencies.
+
+All six desktop targets support **`CGO_ENABLED=0`**. Cross-compilation needs only Go; no C compiler, target development headers or Apple SDK is required.
 
 ### Windows — amd64 and arm64
 
-PowerShell, on Windows:
+PowerShell:
 
 ```powershell
 $env:CGO_ENABLED="0"
@@ -38,41 +40,53 @@ $env:GOARCH="arm64"
 go build -buildvcs=false -trimpath -ldflags="-s -w -H=windowsgui" -o BattleOnTheBlackSea-windows-arm64.exe .
 ```
 
-No C compiler is needed. The PNG icon is embedded and used by the game window; `icon.ico` is supplied for executable-resource packaging.
+The PNG icon is embedded as the window icon; `icon.ico` is supplied for executable-resource packaging.
 
 ### Linux — amd64 and arm64
 
-On Debian/Ubuntu, install the native build dependencies:
+From Linux or macOS:
 
 ```sh
-sudo apt-get install build-essential pkg-config libasound2-dev libx11-dev libxrandr-dev libxcursor-dev libxi-dev libxinerama-dev libxxf86vm-dev libgl1-mesa-dev
+CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -buildvcs=false -trimpath -ldflags="-s -w" -o BattleOnTheBlackSea-linux-amd64 .
+CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -buildvcs=false -trimpath -ldflags="-s -w" -o BattleOnTheBlackSea-linux-arm64 .
 ```
 
-Build on a Linux machine matching the target architecture:
+From **Windows CMD**, for Linux ARM64:
+
+```cmd
+set "CGO_ENABLED=0"
+set "GOOS=linux"
+set "GOARCH=arm64"
+go build -buildvcs=false -trimpath -ldflags="-s -w" -o BattleOnTheBlackSea-linux-arm64 .
+set "CGO_ENABLED="
+set "GOOS="
+set "GOARCH="
+```
+
+The resulting file runs on Linux ARM64. After transferring it, run `chmod +x BattleOnTheBlackSea-linux-arm64` and then `./BattleOnTheBlackSea-linux-arm64`.
+
+At runtime, Linux needs an X11 display (or XWayland) and an OpenGL driver. Audio uses PulseAudio/PipeWire or an ALSA fallback. On Debian/Ubuntu, the basic graphics libraries can be installed with:
 
 ```sh
-# On an amd64 Linux machine:
-CGO_ENABLED=1 GOOS=linux GOARCH=amd64 go build -buildvcs=false -trimpath -ldflags="-s -w" -o BattleOnTheBlackSea-linux-amd64 .
-
-# On an arm64 Linux machine:
-CGO_ENABLED=1 GOOS=linux GOARCH=arm64 go build -buildvcs=false -trimpath -ldflags="-s -w" -o BattleOnTheBlackSea-linux-arm64 .
+sudo apt install libx11-6 libgl1 libglx-mesa0 libxcursor1 libxi6 libxinerama1 libxrandr2 libxrender1 libxext6
 ```
 
-Linux requires an X11 display (or XWayland), OpenGL and ALSA. Cross-compiling Linux arm64 from amd64 additionally requires an AArch64 C compiler and the arm64 versions of these libraries; set `CC=aarch64-linux-gnu-gcc` and point `PKG_CONFIG_LIBDIR` at the target libraries.
+For the ALSA fallback, install `libasound2` on Debian 12/Ubuntu 22.04, or `libasound2t64` on Debian 13/Ubuntu 24.04 and later. These are runtime libraries, not build dependencies.
 
 ### macOS — Intel and Apple Silicon
 
-Build **on macOS**, with Apple's Command Line Tools installed:
+From a Unix shell on Linux or macOS:
 
 ```sh
-xcode-select --install
-CGO_ENABLED=1 GOOS=darwin GOARCH=amd64 go build -buildvcs=false -trimpath -ldflags="-s -w" -o BattleOnTheBlackSea-macos-amd64 .
-CGO_ENABLED=1 GOOS=darwin GOARCH=arm64 go build -buildvcs=false -trimpath -ldflags="-s -w" -o BattleOnTheBlackSea-macos-arm64 .
+CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -buildvcs=false -trimpath -ldflags="-s -w" -o BattleOnTheBlackSea-macos-amd64 .
+CGO_ENABLED=0 GOOS=darwin GOARCH=arm64 go build -buildvcs=false -trimpath -ldflags="-s -w" -o BattleOnTheBlackSea-macos-arm64 .
 ```
 
-The macOS backend requires Cgo and Apple's SDK; `CGO_ENABLED=0` is not supported. `icon.icns` is supplied for an optional `.app` bundle.
+For Windows CMD, use the same `set` syntax as the Linux example, with `GOOS=darwin` and the desired `GOARCH`. `icon.icns` is supplied for an optional `.app` bundle.
 
-For a native development run, use `go run .` after installing the dependencies for your platform. Each built executable contains the complete game; the icon and screenshot files do not have to accompany it.
+For a native development run, use `go run .` from a graphical desktop session. Each built executable contains the complete game; the icon and screenshot files do not have to accompany it.
+
+Verification: `go test ./...` and `go vet ./...`. The audio regression tests retain coverage of the Windows startup deadlock fix.
 
 ## Credits and scope
 

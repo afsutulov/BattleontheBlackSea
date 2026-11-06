@@ -23,11 +23,13 @@
 
 ## Сборка
 
-Установите **Go 1.24 или новее**. Команды выполняются из корня проекта. При первой сборке Go загрузит зависимости, зафиксированные в `go.mod` и `go.sum`.
+Установите **Go 1.25 или новее**. **Ebitengine 2.10.5** и её зависимости зафиксированы в `go.mod` и `go.sum`. Команды выполняются из корня проекта. При первой сборке Go загрузит зависимости.
+
+Все шесть настольных целей поддерживают **`CGO_ENABLED=0`**. Для кросс-компиляции достаточно Go; компилятор C, заголовки целевой системы и SDK Apple не нужны.
 
 ### Windows — amd64 и arm64
 
-PowerShell в Windows:
+PowerShell:
 
 ```powershell
 $env:CGO_ENABLED="0"
@@ -38,41 +40,53 @@ $env:GOARCH="arm64"
 go build -buildvcs=false -trimpath -ldflags="-s -w -H=windowsgui" -o BattleOnTheBlackSea-windows-arm64.exe .
 ```
 
-Компилятор C не нужен. PNG-иконка встроена и используется окном игры; `icon.ico` приложен для оформления ресурсов исполняемого файла.
+PNG-иконка встроена и используется окном игры; `icon.ico` приложен для оформления ресурсов исполняемого файла.
 
 ### Linux — amd64 и arm64
 
-В Debian/Ubuntu установите зависимости для сборки:
+Из Linux или macOS:
 
 ```sh
-sudo apt-get install build-essential pkg-config libasound2-dev libx11-dev libxrandr-dev libxcursor-dev libxi-dev libxinerama-dev libxxf86vm-dev libgl1-mesa-dev
+CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -buildvcs=false -trimpath -ldflags="-s -w" -o BattleOnTheBlackSea-linux-amd64 .
+CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -buildvcs=false -trimpath -ldflags="-s -w" -o BattleOnTheBlackSea-linux-arm64 .
 ```
 
-Собирайте на Linux той же архитектуры, что и целевая система:
+Из **Windows CMD**, для Linux ARM64:
+
+```cmd
+set "CGO_ENABLED=0"
+set "GOOS=linux"
+set "GOARCH=arm64"
+go build -buildvcs=false -trimpath -ldflags="-s -w" -o BattleOnTheBlackSea-linux-arm64 .
+set "CGO_ENABLED="
+set "GOOS="
+set "GOARCH="
+```
+
+Полученный файл запускается на Linux ARM64. После переноса выполните `chmod +x BattleOnTheBlackSea-linux-arm64`, затем `./BattleOnTheBlackSea-linux-arm64`.
+
+Для запуска в Linux нужны X11 либо XWayland и драйвер OpenGL. Звук использует PulseAudio/PipeWire либо резервный вывод ALSA. В Debian/Ubuntu основные графические библиотеки устанавливаются так:
 
 ```sh
-# На Linux amd64:
-CGO_ENABLED=1 GOOS=linux GOARCH=amd64 go build -buildvcs=false -trimpath -ldflags="-s -w" -o BattleOnTheBlackSea-linux-amd64 .
-
-# На Linux arm64:
-CGO_ENABLED=1 GOOS=linux GOARCH=arm64 go build -buildvcs=false -trimpath -ldflags="-s -w" -o BattleOnTheBlackSea-linux-arm64 .
+sudo apt install libx11-6 libgl1 libglx-mesa0 libxcursor1 libxi6 libxinerama1 libxrandr2 libxrender1 libxext6
 ```
 
-Для запуска нужны X11 либо XWayland, OpenGL и ALSA. Кросс-компиляция Linux arm64 на amd64 дополнительно требует компилятор C для AArch64 и версии перечисленных библиотек для arm64: задайте `CC=aarch64-linux-gnu-gcc`, а в `PKG_CONFIG_LIBDIR` укажите библиотеки целевой архитектуры.
+Для резервного вывода ALSA установите `libasound2` на Debian 12/Ubuntu 22.04 или `libasound2t64` на Debian 13/Ubuntu 24.04 и новее. Это библиотеки для запуска, не зависимости сборки.
 
 ### macOS — Intel и Apple Silicon
 
-Сборка выполняется **на macOS**, с установленными Command Line Tools от Apple:
+Из Unix-оболочки на Linux или macOS:
 
 ```sh
-xcode-select --install
-CGO_ENABLED=1 GOOS=darwin GOARCH=amd64 go build -buildvcs=false -trimpath -ldflags="-s -w" -o BattleOnTheBlackSea-macos-amd64 .
-CGO_ENABLED=1 GOOS=darwin GOARCH=arm64 go build -buildvcs=false -trimpath -ldflags="-s -w" -o BattleOnTheBlackSea-macos-arm64 .
+CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 go build -buildvcs=false -trimpath -ldflags="-s -w" -o BattleOnTheBlackSea-macos-amd64 .
+CGO_ENABLED=0 GOOS=darwin GOARCH=arm64 go build -buildvcs=false -trimpath -ldflags="-s -w" -o BattleOnTheBlackSea-macos-arm64 .
 ```
 
-Для macOS необходимы Cgo и SDK Apple; `CGO_ENABLED=0` не поддерживается. `icon.icns` приложен для оформления необязательного пакета `.app`.
+В Windows CMD используйте такой же синтаксис `set`, как в примере Linux, задав `GOOS=darwin` и нужную `GOARCH`. `icon.icns` приложен для оформления необязательного пакета `.app`.
 
-Для запуска из исходников используйте `go run .`, предварительно установив зависимости своей платформы. Собранный исполняемый файл содержит всю игру; отдельные иконки и скриншоты для запуска не нужны.
+Для запуска из исходников используйте `go run .` в графическом сеансе. Собранный исполняемый файл содержит всю игру; отдельные иконки и скриншоты для запуска не нужны.
+
+Проверка: `go test ./...` и `go vet ./...`. Сохранены регрессионные тесты исправления зависания при запуске звука в Windows.
 
 ## Авторы и границы проверки
 
