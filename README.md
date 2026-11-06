@@ -6,9 +6,6 @@ A native Go reconstruction of Vladimir Bashurov's (BADY) 1992 DOS naval strategy
 
 The original 320×200, 16-colour artwork, bitmap lettering, screen transitions, combat animations and PC Speaker effects are retained. The recovered Pascal procedures execute as compiled Go functions, including the original fleet placement, computer strategy, scoring and 16-bit arithmetic. All game resources are embedded in the executable; no DOS installation or original executable is needed. The window uses the original display's 4:3 aspect ratio.
 
-![Campaign map](screenshots/map.png)
-![Naval battle](screenshots/battle.png)
-
 ## Controls
 
 | Key | Action |
