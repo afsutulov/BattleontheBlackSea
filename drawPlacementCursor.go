@@ -6,7 +6,7 @@ func (m *gameState) drawPlacementCursor() {
 	m.bp = (m.sp) & 65535
 	m.ax = (2) & 65535
 	m.runtime(0x6ea, 0x244)
-	m.sp = (m.alu("sub", m.sp, 2, 16)) & 65535
+	m.sp = (m.alu(opSub, m.sp, 2, 16)) & 65535
 	m.temp = m.r16(m.ds, (5684)&65535)
 	m.es = m.r16(m.ds, ((5684)&65535)+2)
 	m.di = (m.temp) & 65535
@@ -18,9 +18,9 @@ func (m *gameState) drawPlacementCursor() {
 	m.push(m.es)
 	m.clock(16)
 	m.push(m.di)
-	m.ax = (m.alu("xor", m.ax, m.ax, 16)) & 65535
+	m.ax = (m.alu(opXor, m.ax, m.ax, 16)) & 65535
 	m.push(m.ax)
-	m.ax = (m.alu("xor", m.ax, m.ax, 16)) & 65535
+	m.ax = (m.alu(opXor, m.ax, m.ax, 16)) & 65535
 	m.push(m.ax)
 	m.ax = (16) & 65535
 	m.push(m.ax)
@@ -54,11 +54,11 @@ L30ce:
 	m.cx = (m.cx & 65280) | ((3) & 255)
 	m.clock(16)
 	m.di = (m.shift(m.di, (m.cx & 255), 16, true)) & 65535
-	m.alu("sub", m.r8(m.ds, (m.di+5353)&65535), 0, 8)
+	m.alu(opSub, m.r8(m.ds, (m.di+5353)&65535), 0, 8)
 	if !m.z {
 		goto L312c
 	}
-	m.alu("sub", m.r16(m.ss, (m.bp+-2)&65535), 1, 16)
+	m.alu(opSub, m.r16(m.ss, (m.bp+-2)&65535), 1, 16)
 	if m.z || m.s != m.o {
 		goto L312c
 	}
@@ -68,8 +68,8 @@ L30ce:
 	m.cx = (m.cx & 65280) | ((3) & 255)
 	m.di = (m.shift(m.di, (m.cx & 255), 16, true)) & 65535
 	m.ax = (m.ax & 65280) | ((m.r8(m.ds, (m.di+5351)&65535)) & 255)
-	m.ax = (m.ax & 255) | (((m.alu("xor", (m.ax >> 8), (m.ax >> 8), 8)) & 255) << 8)
-	m.ax = (m.alu("add", m.ax, 4, 16)) & 65535
+	m.ax = (m.ax & 255) | (((m.alu(opXor, (m.ax >> 8), (m.ax >> 8), 8)) & 255) << 8)
+	m.ax = (m.alu(opAdd, m.ax, 4, 16)) & 65535
 	m.di = (m.ax) & 65535
 	m.di = (m.shift(m.di, 1, 16, true)) & 65535
 	m.clock(16)
@@ -92,7 +92,7 @@ L30ce:
 	m.dx = (m.ax) & 65535
 	m.clock(16)
 	m.ax = (160) & 65535
-	m.ax = (m.alu("sub", m.ax, m.dx, 16)) & 65535
+	m.ax = (m.alu(opSub, m.ax, m.dx, 16)) & 65535
 	m.push(m.ax)
 	m.ax = (1) & 65535
 	m.push(m.ax)

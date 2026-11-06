@@ -4,7 +4,7 @@ package main
 func (m *gameState) confirmExit() {
 	m.push(m.bp)
 	m.bp = (m.sp) & 65535
-	m.ax = (m.alu("xor", m.ax, m.ax, 16)) & 65535
+	m.ax = (m.alu(opXor, m.ax, m.ax, 16)) & 65535
 	m.runtime(0x6ea, 0x244)
 	m.ax = (m.ax & 65280) | ((5) & 255)
 	m.dx = (974) & 65535
@@ -79,10 +79,10 @@ func (m *gameState) confirmExit() {
 	m.push(m.ax)
 	m.ax = (2) & 65535
 	m.push(m.ax)
-	m.ax = (m.alu("xor", m.ax, m.ax, 16)) & 65535
+	m.ax = (m.alu(opXor, m.ax, m.ax, 16)) & 65535
 	m.push(m.ax)
 	m.clock(16)
-	m.ax = (m.alu("xor", m.ax, m.ax, 16)) & 65535
+	m.ax = (m.alu(opXor, m.ax, m.ax, 16)) & 65535
 	m.push(m.ax)
 	m.si = (40960) & 65535
 	m.es = (m.si) & 65535
@@ -134,9 +134,9 @@ func (m *gameState) confirmExit() {
 	m.clock(16)
 	m.ax = (2) & 65535
 	m.push(m.ax)
-	m.ax = (m.alu("xor", m.ax, m.ax, 16)) & 65535
+	m.ax = (m.alu(opXor, m.ax, m.ax, 16)) & 65535
 	m.push(m.ax)
-	m.ax = (m.alu("xor", m.ax, m.ax, 16)) & 65535
+	m.ax = (m.alu(opXor, m.ax, m.ax, 16)) & 65535
 	m.push(m.ax)
 	m.si = (40960) & 65535
 	m.es = (m.si) & 65535

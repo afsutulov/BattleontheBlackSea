@@ -6,7 +6,7 @@ func (m *gameState) playerTurn() {
 	m.bp = (m.sp) & 65535
 	m.ax = (46) & 65535
 	m.runtime(0x6ea, 0x244)
-	m.sp = (m.alu("sub", m.sp, 46, 16)) & 65535
+	m.sp = (m.alu(opSub, m.sp, 46, 16)) & 65535
 	m.di = (6404) & 65535
 	m.push(m.cs)
 	m.push(m.di)
@@ -183,9 +183,9 @@ func (m *gameState) playerTurn() {
 	m.clock(16)
 	m.ax = (m.r16(m.ds, (4460)&65535)) & 65535
 	m.w16(m.ss, (m.bp+-10)&65535, m.ax)
-	m.ax = (m.alu("xor", m.ax, m.ax, 16)) & 65535
+	m.ax = (m.alu(opXor, m.ax, m.ax, 16)) & 65535
 	m.w16(m.ss, (m.bp+-14)&65535, m.ax)
-	m.ax = (m.alu("xor", m.ax, m.ax, 16)) & 65535
+	m.ax = (m.alu(opXor, m.ax, m.ax, 16)) & 65535
 	m.w16(m.ds, (5530)&65535, m.ax)
 	m.w16(m.ds, (4476)&65535, m.step(m.r16(m.ds, (4476)&65535), 1, 16))
 L1a82:
@@ -245,14 +245,14 @@ L1ad0:
 	m.push(m.di)
 	m.ax = (m.r16(m.ss, (m.bp+-8)&65535)) & 65535
 	m.cx = (14) & 65535
-	m.product("imul", m.cx)
-	m.ax = (m.alu("add", m.ax, 150, 16)) & 65535
+	m.product(opImul, m.cx)
+	m.ax = (m.alu(opAdd, m.ax, 150, 16)) & 65535
 	m.push(m.ax)
 	m.ax = (m.r16(m.ss, (m.bp+-10)&65535)) & 65535
 	m.clock(16)
 	m.cx = (14) & 65535
-	m.product("imul", m.cx)
-	m.ax = (m.alu("add", m.ax, 17, 16)) & 65535
+	m.product(opImul, m.cx)
+	m.ax = (m.alu(opAdd, m.ax, 17, 16)) & 65535
 	m.push(m.ax)
 	m.ax = (11) & 65535
 	m.push(m.ax)
@@ -260,7 +260,7 @@ L1ad0:
 	m.push(0)
 	m.drawSprite()
 	m.ax = (m.r16(m.ds, (4476)&65535)) & 65535
-	m.dx = (m.alu("xor", m.dx, m.dx, 16)) & 65535
+	m.dx = (m.alu(opXor, m.dx, m.dx, 16)) & 65535
 	m.push(m.dx)
 	m.push(m.ax)
 	m.ax = (2) & 65535
@@ -338,7 +338,7 @@ L1ad0:
 	m.push(m.ax)
 	m.runtime(0x6ea, 0x152d)
 	m.runtime(0x688, 0x2fa)
-	m.ax = (m.ax & 65280) | ((m.alu("or", (m.ax & 255), (m.ax & 255), 8)) & 255)
+	m.ax = (m.ax & 65280) | ((m.alu(opOr, (m.ax & 255), (m.ax & 255), 8)) & 255)
 	if !m.z {
 		goto L1ba3
 	}
@@ -353,42 +353,42 @@ L1bab:
 L1baf:
 	m.clock(16)
 	m.ax = (m.r16(m.ds, (5558)&65535)) & 65535
-	m.product("imul", m.r16(m.ds, (5558)&65535))
+	m.product(opImul, m.r16(m.ds, (5558)&65535))
 	m.cx = (2) & 65535
 	m.ax = (m.shift(m.ax, (m.cx & 255), 16, true)) & 65535
-	m.ax = (m.alu("add", m.ax, 20, 16)) & 65535
-	m.product("imul", m.r16(m.ds, (5518)&65535))
+	m.ax = (m.alu(opAdd, m.ax, 20, 16)) & 65535
+	m.product(opImul, m.r16(m.ds, (5518)&65535))
 	m.push(m.ax)
 	m.runtime(0x688, 0x2c6)
-	m.alu("sub", m.r16(m.ds, (5558)&65535), 20, 16)
+	m.alu(opSub, m.r16(m.ds, (5558)&65535), 20, 16)
 	if !m.z {
 		goto L1bab
 	}
 	m.runtime(0x688, 0x2f3)
 	m.runtime(0x688, 0x30c)
 	m.w8(m.ds, (5570)&65535, (m.ax & 255))
-	m.alu("sub", m.r8(m.ds, (5570)&65535), 0, 8)
+	m.alu(opSub, m.r8(m.ds, (5570)&65535), 0, 8)
 	m.clock(16)
 	if !m.z {
 		goto L1c50
 	}
 	m.runtime(0x688, 0x30c)
 	m.w8(m.ds, (5570)&65535, (m.ax & 255))
-	m.alu("sub", m.r8(m.ds, (5570)&65535), 72, 8)
+	m.alu(opSub, m.r8(m.ds, (5570)&65535), 72, 8)
 	if !m.z {
 		goto L1bf5
 	}
 	m.w16(m.ss, (m.bp+-10)&65535, m.step(m.r16(m.ss, (m.bp+-10)&65535), -1, 16))
 L1bf5:
 	m.clock(16)
-	m.alu("sub", m.r8(m.ds, (5570)&65535), 80, 8)
+	m.alu(opSub, m.r8(m.ds, (5570)&65535), 80, 8)
 	if !m.z {
 		goto L1bff
 	}
 	m.w16(m.ss, (m.bp+-10)&65535, m.step(m.r16(m.ss, (m.bp+-10)&65535), 1, 16))
 L1bff:
 	m.clock(16)
-	m.alu("sub", m.r8(m.ds, (5570)&65535), 75, 8)
+	m.alu(opSub, m.r8(m.ds, (5570)&65535), 75, 8)
 	if !m.z {
 		goto L1c09
 	}
@@ -396,44 +396,44 @@ L1bff:
 	m.w16(m.ss, (m.bp+-8)&65535, m.step(m.r16(m.ss, (m.bp+-8)&65535), -1, 16))
 L1c09:
 	m.clock(16)
-	m.alu("sub", m.r8(m.ds, (5570)&65535), 77, 8)
+	m.alu(opSub, m.r8(m.ds, (5570)&65535), 77, 8)
 	if !m.z {
 		goto L1c13
 	}
 	m.w16(m.ss, (m.bp+-8)&65535, m.step(m.r16(m.ss, (m.bp+-8)&65535), 1, 16))
 L1c13:
 	m.clock(16)
-	m.alu("sub", m.r8(m.ds, (5570)&65535), 59, 8)
+	m.alu(opSub, m.r8(m.ds, (5570)&65535), 59, 8)
 	if !m.z {
 		goto L1c24
 	}
 	m.ax = (1) & 65535
-	m.ax = (m.alu("sub", m.ax, m.r16(m.ds, (5518)&65535), 16)) & 65535
+	m.ax = (m.alu(opSub, m.ax, m.r16(m.ds, (5518)&65535), 16)) & 65535
 	m.w16(m.ds, (5518)&65535, m.ax)
 L1c24:
 	m.clock(16)
-	m.alu("sub", m.r16(m.ss, (m.bp+-8)&65535), 1, 16)
+	m.alu(opSub, m.r16(m.ss, (m.bp+-8)&65535), 1, 16)
 	if m.s == m.o {
 		goto L1c2f
 	}
 	m.w16(m.ss, (m.bp+-8)&65535, 10)
 L1c2f:
 	m.clock(16)
-	m.alu("sub", m.r16(m.ss, (m.bp+-8)&65535), 10, 16)
+	m.alu(opSub, m.r16(m.ss, (m.bp+-8)&65535), 10, 16)
 	if m.z || m.s != m.o {
 		goto L1c3a
 	}
 	m.w16(m.ss, (m.bp+-8)&65535, 1)
 L1c3a:
 	m.clock(16)
-	m.alu("sub", m.r16(m.ss, (m.bp+-10)&65535), 1, 16)
+	m.alu(opSub, m.r16(m.ss, (m.bp+-10)&65535), 1, 16)
 	if m.s == m.o {
 		goto L1c45
 	}
 	m.w16(m.ss, (m.bp+-10)&65535, 10)
 L1c45:
 	m.clock(16)
-	m.alu("sub", m.r16(m.ss, (m.bp+-10)&65535), 10, 16)
+	m.alu(opSub, m.r16(m.ss, (m.bp+-10)&65535), 10, 16)
 	m.clock(16)
 	if m.z || m.s != m.o {
 		goto L1c50
@@ -441,7 +441,7 @@ L1c45:
 	m.w16(m.ss, (m.bp+-10)&65535, 1)
 L1c50:
 	m.clock(16)
-	m.alu("sub", m.r8(m.ds, (5570)&65535), 13, 8)
+	m.alu(opSub, m.r8(m.ds, (5570)&65535), 13, 8)
 	if m.z {
 		goto L1c5a
 	}
@@ -450,7 +450,7 @@ L1c5a:
 	m.clock(16)
 	m.w16(m.ss, (m.bp+-24)&65535, 1)
 	m.w16(m.ss, (m.bp+-26)&65535, 1)
-	m.ax = (m.alu("xor", m.ax, m.ax, 16)) & 65535
+	m.ax = (m.alu(opXor, m.ax, m.ax, 16)) & 65535
 	m.w16(m.ds, (5530)&65535, m.ax)
 L1c69:
 	m.clock(16)
@@ -469,11 +469,11 @@ L1c69:
 	m.cx = (m.ax) & 65535
 	m.ax = (m.r16(m.ds, (5558)&65535)) & 65535
 	m.dx = (24) & 65535
-	m.product("mul", m.dx)
+	m.product(opMul, m.dx)
 	m.clock(16)
 	m.di = (m.ax) & 65535
-	m.di = (m.alu("add", m.di, m.cx, 16)) & 65535
-	m.alu("sub", m.r16(m.ds, (m.di+4494)&65535), 0, 16)
+	m.di = (m.alu(opAdd, m.di, m.cx, 16)) & 65535
+	m.alu(opSub, m.r16(m.ds, (m.di+4494)&65535), 0, 16)
 	if m.z || m.s != m.o {
 		goto L1c69
 	}
@@ -482,10 +482,10 @@ L1c69:
 	m.cx = (m.ax) & 65535
 	m.ax = (m.r16(m.ds, (5558)&65535)) & 65535
 	m.dx = (24) & 65535
-	m.product("mul", m.dx)
+	m.product(opMul, m.dx)
 	m.di = (m.ax) & 65535
-	m.di = (m.alu("add", m.di, m.cx, 16)) & 65535
-	m.alu("sub", m.r16(m.ds, (m.di+4494)&65535), 100, 16)
+	m.di = (m.alu(opAdd, m.di, m.cx, 16)) & 65535
+	m.alu(opSub, m.r16(m.ds, (m.di+4494)&65535), 100, 16)
 	if m.s == m.o {
 		goto L1c69
 	}
@@ -496,13 +496,13 @@ L1c69:
 	m.w16(m.ss, (m.bp+-26)&65535, m.ax)
 	m.ax = (m.r16(m.ss, (m.bp+-24)&65535)) & 65535
 	m.cx = (14) & 65535
-	m.product("imul", m.cx)
-	m.ax = (m.alu("add", m.ax, 16, 16)) & 65535
+	m.product(opImul, m.cx)
+	m.ax = (m.alu(opAdd, m.ax, 16, 16)) & 65535
 	m.w16(m.ss, (m.bp+-24)&65535, m.ax)
 	m.ax = (m.r16(m.ss, (m.bp+-26)&65535)) & 65535
 	m.cx = (14) & 65535
-	m.product("imul", m.cx)
-	m.ax = (m.alu("add", m.ax, 26, 16)) & 65535
+	m.product(opImul, m.cx)
+	m.ax = (m.alu(opAdd, m.ax, 26, 16)) & 65535
 	m.w16(m.ss, (m.bp+-26)&65535, m.ax)
 	m.ax = (m.r16(m.ss, (m.bp+-24)&65535)) & 65535
 	m.w16(m.ss, (m.bp+-16)&65535, m.ax)
@@ -511,13 +511,13 @@ L1c69:
 	m.w16(m.ss, (m.bp+-18)&65535, m.ax)
 	m.ax = (m.r16(m.ss, (m.bp+-8)&65535)) & 65535
 	m.cx = (14) & 65535
-	m.product("imul", m.cx)
-	m.ax = (m.alu("add", m.ax, 154, 16)) & 65535
+	m.product(opImul, m.cx)
+	m.ax = (m.alu(opAdd, m.ax, 154, 16)) & 65535
 	m.w16(m.ss, (m.bp+-28)&65535, m.ax)
 	m.ax = (m.r16(m.ss, (m.bp+-10)&65535)) & 65535
 	m.cx = (14) & 65535
-	m.product("imul", m.cx)
-	m.ax = (m.alu("add", m.ax, 18, 16)) & 65535
+	m.product(opImul, m.cx)
+	m.ax = (m.alu(opAdd, m.ax, 18, 16)) & 65535
 	m.w16(m.ss, (m.bp+-30)&65535, m.ax)
 	m.ax = (m.r16(m.ss, (m.bp+-30)&65535)) & 65535
 	m.dx = 0
@@ -539,7 +539,7 @@ L1c69:
 	m.push(m.bx)
 	m.push(m.ax)
 	m.ax = (137) & 65535
-	m.bx = (m.alu("xor", m.bx, m.bx, 16)) & 65535
+	m.bx = (m.alu(opXor, m.bx, m.bx, 16)) & 65535
 	m.dx = (14592) & 65535
 	m.cx = (m.pop()) & 65535
 	m.si = (m.pop()) & 65535
@@ -564,7 +564,7 @@ L1c69:
 	m.push(m.ax)
 	m.ax = (136) & 65535
 	m.clock(16)
-	m.bx = (m.alu("xor", m.bx, m.bx, 16)) & 65535
+	m.bx = (m.alu(opXor, m.bx, m.bx, 16)) & 65535
 	m.dx = (14592) & 65535
 	m.cx = (m.pop()) & 65535
 	m.si = (m.pop()) & 65535
@@ -574,7 +574,7 @@ L1c69:
 	m.push(m.bx)
 	m.push(m.ax)
 	m.ax = (m.r16(m.ss, (m.bp+-28)&65535)) & 65535
-	m.ax = (m.alu("sub", m.ax, m.r16(m.ss, (m.bp+-24)&65535), 16)) & 65535
+	m.ax = (m.alu(opSub, m.ax, m.r16(m.ss, (m.bp+-24)&65535), 16)) & 65535
 	m.dx = 0
 	if m.ax&32768 != 0 {
 		m.dx = 65535
@@ -597,14 +597,14 @@ L1c69:
 	if m.ax&32768 != 0 {
 		m.dx = 65535
 	}
-	m.ax = (m.alu("add", m.ax, m.cx, 16)) & 65535
-	m.dx = (m.alu("adc", m.dx, m.bx, 16)) & 65535
+	m.ax = (m.alu(opAdd, m.ax, m.cx, 16)) & 65535
+	m.dx = (m.alu(opAdc, m.dx, m.bx, 16)) & 65535
 	m.w16(m.ss, (m.bp+-4)&65535, m.ax)
 	m.w16(m.ss, (m.bp+-6)&65535, 185)
 	m.clock(16)
-	m.ax = (m.alu("xor", m.ax, m.ax, 16)) & 65535
+	m.ax = (m.alu(opXor, m.ax, m.ax, 16)) & 65535
 	m.w16(m.ss, (m.bp+-14)&65535, m.ax)
-	m.ax = (m.alu("xor", m.ax, m.ax, 16)) & 65535
+	m.ax = (m.alu(opXor, m.ax, m.ax, 16)) & 65535
 	m.w16(m.ss, (m.bp+-22)&65535, m.ax)
 	goto L1d9d
 L1d9a:
@@ -622,13 +622,13 @@ L1da9:
 	m.ax = (100) & 65535
 	m.push(m.ax)
 	m.runtime(0x6ea, 0xcc7)
-	m.ax = (m.alu("add", m.ax, 100, 16)) & 65535
-	m.dx = (m.alu("xor", m.dx, m.dx, 16)) & 65535
+	m.ax = (m.alu(opAdd, m.ax, 100, 16)) & 65535
+	m.dx = (m.alu(opXor, m.dx, m.dx, 16)) & 65535
 	m.cx = (m.ax) & 65535
 	m.bx = (m.dx) & 65535
 	m.ax = (4) & 65535
-	m.ax = (m.alu("sub", m.ax, m.r16(m.ss, (m.bp+-22)&65535), 16)) & 65535
-	m.product("imul", m.r16(m.ds, (5518)&65535))
+	m.ax = (m.alu(opSub, m.ax, m.r16(m.ss, (m.bp+-22)&65535), 16)) & 65535
+	m.product(opImul, m.r16(m.ds, (5518)&65535))
 	m.dx = 0
 	if m.ax&32768 != 0 {
 		m.dx = 65535
@@ -648,11 +648,11 @@ L1da9:
 		m.dx = 65535
 	}
 	m.cx = (2) & 65535
-	m.product("idiv", m.cx)
-	m.ax = (m.alu("add", m.ax, m.r16(m.ss, (m.bp+-22)&65535), 16)) & 65535
+	m.product(opIdiv, m.cx)
+	m.ax = (m.alu(opAdd, m.ax, m.r16(m.ss, (m.bp+-22)&65535), 16)) & 65535
 	m.push(m.ax)
 	m.runtime(0x688, 0x29e)
-	m.alu("sub", m.r16(m.ds, (5558)&65535), 5, 16)
+	m.alu(opSub, m.r16(m.ds, (5558)&65535), 5, 16)
 	if !m.z {
 		goto L1da5
 	}
@@ -660,12 +660,12 @@ L1da9:
 	m.clock(16)
 	m.push(m.ax)
 	m.runtime(0x6ea, 0xcc7)
-	m.ax = (m.alu("add", m.ax, 9, 16)) & 65535
+	m.ax = (m.alu(opAdd, m.ax, 9, 16)) & 65535
 	m.push(m.ax)
 	m.ax = (2) & 65535
 	m.push(m.ax)
 	m.runtime(0x6ea, 0xcc7)
-	m.dx = (m.alu("xor", m.dx, m.dx, 16)) & 65535
+	m.dx = (m.alu(opXor, m.dx, m.dx, 16)) & 65535
 	m.push(m.dx)
 	m.push(m.ax)
 	m.ax = (m.r16(m.ss, (m.bp+-22)&65535)) & 65535
@@ -674,25 +674,25 @@ L1da9:
 		m.dx = 65535
 	}
 	m.cx = (3) & 65535
-	m.product("idiv", m.cx)
+	m.product(opIdiv, m.cx)
 	m.dx = (m.ax) & 65535
 	m.clock(16)
 	m.ax = (m.r16(m.ss, (m.bp+-24)&65535)) & 65535
-	m.ax = (m.alu("add", m.ax, 2, 16)) & 65535
-	m.ax = (m.alu("add", m.ax, m.dx, 16)) & 65535
+	m.ax = (m.alu(opAdd, m.ax, 2, 16)) & 65535
+	m.ax = (m.alu(opAdd, m.ax, m.dx, 16)) & 65535
 	m.dx = 0
 	if m.ax&32768 != 0 {
 		m.dx = 65535
 	}
 	m.cx = (m.pop()) & 65535
 	m.bx = (m.pop()) & 65535
-	m.ax = (m.alu("add", m.ax, m.cx, 16)) & 65535
-	m.dx = (m.alu("adc", m.dx, m.bx, 16)) & 65535
+	m.ax = (m.alu(opAdd, m.ax, m.cx, 16)) & 65535
+	m.dx = (m.alu(opAdc, m.dx, m.bx, 16)) & 65535
 	m.push(m.ax)
 	m.ax = (2) & 65535
 	m.push(m.ax)
 	m.runtime(0x6ea, 0xcc7)
-	m.dx = (m.alu("xor", m.dx, m.dx, 16)) & 65535
+	m.dx = (m.alu(opXor, m.dx, m.dx, 16)) & 65535
 	m.push(m.dx)
 	m.push(m.ax)
 	m.clock(16)
@@ -702,19 +702,19 @@ L1da9:
 		m.dx = 65535
 	}
 	m.cx = (3) & 65535
-	m.product("idiv", m.cx)
+	m.product(opIdiv, m.cx)
 	m.dx = (m.ax) & 65535
 	m.ax = (m.r16(m.ss, (m.bp+-26)&65535)) & 65535
-	m.ax = (m.alu("add", m.ax, 3, 16)) & 65535
-	m.ax = (m.alu("add", m.ax, m.dx, 16)) & 65535
+	m.ax = (m.alu(opAdd, m.ax, 3, 16)) & 65535
+	m.ax = (m.alu(opAdd, m.ax, m.dx, 16)) & 65535
 	m.dx = 0
 	if m.ax&32768 != 0 {
 		m.dx = 65535
 	}
 	m.cx = (m.pop()) & 65535
 	m.bx = (m.pop()) & 65535
-	m.ax = (m.alu("add", m.ax, m.cx, 16)) & 65535
-	m.dx = (m.alu("adc", m.dx, m.bx, 16)) & 65535
+	m.ax = (m.alu(opAdd, m.ax, m.cx, 16)) & 65535
+	m.dx = (m.alu(opAdc, m.dx, m.bx, 16)) & 65535
 	m.push(m.ax)
 	m.ax = (1) & 65535
 	m.clock(16)
@@ -723,7 +723,7 @@ L1da9:
 	m.push(m.cs)
 	m.push(0)
 	m.drawPlayerCrosshair()
-	m.alu("sub", m.r16(m.ss, (m.bp+-22)&65535), 3, 16)
+	m.alu(opSub, m.r16(m.ss, (m.bp+-22)&65535), 3, 16)
 	if m.z {
 		goto L1e68
 	}
@@ -731,16 +731,16 @@ L1da9:
 L1e68:
 	m.clock(16)
 	m.ax = (m.r16(m.ss, (m.bp+-6)&65535)) & 65535
-	m.ax = (m.alu("sub", m.ax, m.r16(m.ss, (m.bp+-26)&65535), 16)) & 65535
-	m.ax = (m.alu("or", m.ax, m.ax, 16)) & 65535
+	m.ax = (m.alu(opSub, m.ax, m.r16(m.ss, (m.bp+-26)&65535), 16)) & 65535
+	m.ax = (m.alu(opOr, m.ax, m.ax, 16)) & 65535
 	if !m.s {
 		goto L1e74
 	}
-	m.ax = (m.alu("sub", 0, m.ax, 16)) & 65535
+	m.ax = (m.alu(opSub, 0, m.ax, 16)) & 65535
 L1e74:
 	m.clock(16)
-	m.ax = (m.alu("add", m.ax, m.r16(m.ss, (m.bp+-4)&65535), 16)) & 65535
-	m.ax = (m.alu("sub", m.ax, m.r16(m.ss, (m.bp+-24)&65535), 16)) & 65535
+	m.ax = (m.alu(opAdd, m.ax, m.r16(m.ss, (m.bp+-4)&65535), 16)) & 65535
+	m.ax = (m.alu(opSub, m.ax, m.r16(m.ss, (m.bp+-24)&65535), 16)) & 65535
 	m.dx = 0
 	if m.ax&32768 != 0 {
 		m.dx = 65535
@@ -751,8 +751,8 @@ L1e74:
 	m.di = (30146) & 65535
 	m.runtime(0x6ea, 0xc8d)
 	m.runtime(0x6ea, 0xcad)
-	m.ax = (m.alu("add", m.ax, 1, 16)) & 65535
-	m.dx = (m.alu("adc", m.dx, 0, 16)) & 65535
+	m.ax = (m.alu(opAdd, m.ax, 1, 16)) & 65535
+	m.dx = (m.alu(opAdc, m.dx, 0, 16)) & 65535
 	m.w16(m.ss, (m.bp+-12)&65535, m.ax)
 	m.ax = (m.r16(m.ss, (m.bp+-12)&65535)) & 65535
 	m.dx = 0
@@ -765,7 +765,7 @@ L1e74:
 	m.push(m.bx)
 	m.push(m.ax)
 	m.ax = (m.r16(m.ss, (m.bp+-4)&65535)) & 65535
-	m.ax = (m.alu("sub", m.ax, m.r16(m.ss, (m.bp+-24)&65535), 16)) & 65535
+	m.ax = (m.alu(opSub, m.ax, m.r16(m.ss, (m.bp+-24)&65535), 16)) & 65535
 	m.dx = 0
 	if m.ax&32768 != 0 {
 		m.dx = 65535
@@ -789,7 +789,7 @@ L1e74:
 	m.push(m.bx)
 	m.push(m.ax)
 	m.ax = (m.r16(m.ss, (m.bp+-6)&65535)) & 65535
-	m.ax = (m.alu("sub", m.ax, m.r16(m.ss, (m.bp+-26)&65535), 16)) & 65535
+	m.ax = (m.alu(opSub, m.ax, m.r16(m.ss, (m.bp+-26)&65535), 16)) & 65535
 	m.dx = 0
 	if m.ax&32768 != 0 {
 		m.dx = 65535
@@ -808,7 +808,7 @@ L1e74:
 	m.ax = (m.step(m.ax, -1, 16)) & 65535
 	m.w16(m.ss, (m.bp+-44)&65535, m.ax)
 	m.ax = (1) & 65535
-	m.alu("sub", m.ax, m.r16(m.ss, (m.bp+-44)&65535), 16)
+	m.alu(opSub, m.ax, m.r16(m.ss, (m.bp+-44)&65535), 16)
 	if m.z || m.s != m.o {
 		goto L1f05
 	}
@@ -823,12 +823,12 @@ L1f0a:
 L1f0d:
 	m.clock(16)
 	m.ax = (m.r16(m.ds, (5530)&65535)) & 65535
-	m.cx = (m.alu("xor", m.cx, m.cx, 16)) & 65535
+	m.cx = (m.alu(opXor, m.cx, m.cx, 16)) & 65535
 	m.ax = (m.shift(m.ax, (m.cx & 255), 16, true)) & 65535
 	m.dx = (m.ax) & 65535
 	m.ax = (200) & 65535
-	m.ax = (m.alu("sub", m.ax, m.dx, 16)) & 65535
-	m.dx = (m.alu("xor", m.dx, m.dx, 16)) & 65535
+	m.ax = (m.alu(opSub, m.ax, m.dx, 16)) & 65535
+	m.dx = (m.alu(opXor, m.dx, m.dx, 16)) & 65535
 	m.cx = (m.ax) & 65535
 	m.bx = (m.dx) & 65535
 	m.ax = (m.r16(m.ds, (5518)&65535)) & 65535
@@ -862,8 +862,8 @@ L1f0d:
 	if m.ax&32768 != 0 {
 		m.dx = 65535
 	}
-	m.ax = (m.alu("add", m.ax, m.cx, 16)) & 65535
-	m.dx = (m.alu("adc", m.dx, m.bx, 16)) & 65535
+	m.ax = (m.alu(opAdd, m.ax, m.cx, 16)) & 65535
+	m.dx = (m.alu(opAdc, m.dx, m.bx, 16)) & 65535
 	m.push(m.ax)
 	m.ax = (m.r16(m.ss, (m.bp+-22)&65535)) & 65535
 	m.dx = 0
@@ -884,10 +884,10 @@ L1f0d:
 	if m.ax&32768 != 0 {
 		m.dx = 65535
 	}
-	m.ax = (m.alu("add", m.ax, m.cx, 16)) & 65535
-	m.dx = (m.alu("adc", m.dx, m.bx, 16)) & 65535
-	m.ax = (m.alu("add", m.ax, 3, 16)) & 65535
-	m.dx = (m.alu("adc", m.dx, 0, 16)) & 65535
+	m.ax = (m.alu(opAdd, m.ax, m.cx, 16)) & 65535
+	m.dx = (m.alu(opAdc, m.dx, m.bx, 16)) & 65535
+	m.ax = (m.alu(opAdd, m.ax, 3, 16)) & 65535
+	m.dx = (m.alu(opAdc, m.dx, 0, 16)) & 65535
 	m.push(m.ax)
 	m.ax = (11) & 65535
 	m.push(m.ax)
@@ -896,14 +896,14 @@ L1f0d:
 	m.push(0)
 	m.drawPlayerCrosshair()
 	m.ax = (m.r16(m.ss, (m.bp+-22)&65535)) & 65535
-	m.alu("sub", m.ax, m.r16(m.ss, (m.bp+-44)&65535), 16)
+	m.alu(opSub, m.ax, m.r16(m.ss, (m.bp+-44)&65535), 16)
 	if m.z {
 		goto L1fa4
 	}
 	goto L1f0a
 L1fa4:
 	m.clock(16)
-	m.ax = (m.alu("xor", m.ax, m.ax, 16)) & 65535
+	m.ax = (m.alu(opXor, m.ax, m.ax, 16)) & 65535
 	m.w16(m.ss, (m.bp+-22)&65535, m.ax)
 	goto L1fae
 L1fab:
@@ -912,13 +912,13 @@ L1fab:
 L1fae:
 	m.clock(16)
 	m.ax = (m.r16(m.ds, (5530)&65535)) & 65535
-	m.cx = (m.alu("xor", m.cx, m.cx, 16)) & 65535
+	m.cx = (m.alu(opXor, m.cx, m.cx, 16)) & 65535
 	m.ax = (m.shift(m.ax, (m.cx & 255), 16, true)) & 65535
 	m.dx = (m.ax) & 65535
 	m.ax = (200) & 65535
-	m.ax = (m.alu("sub", m.ax, m.dx, 16)) & 65535
+	m.ax = (m.alu(opSub, m.ax, m.dx, 16)) & 65535
 	m.clock(16)
-	m.dx = (m.alu("xor", m.dx, m.dx, 16)) & 65535
+	m.dx = (m.alu(opXor, m.dx, m.dx, 16)) & 65535
 	m.cx = (m.ax) & 65535
 	m.bx = (m.dx) & 65535
 	m.ax = (m.r16(m.ds, (5518)&65535)) & 65535
@@ -934,7 +934,7 @@ L1fae:
 	m.push(m.ax)
 	m.push(m.r16(m.ss, (m.bp+-4)&65535))
 	m.ax = (m.r16(m.ss, (m.bp+-6)&65535)) & 65535
-	m.ax = (m.alu("add", m.ax, 5, 16)) & 65535
+	m.ax = (m.alu(opAdd, m.ax, 5, 16)) & 65535
 	m.push(m.ax)
 	m.clock(16)
 	m.ax = (11) & 65535
@@ -943,22 +943,22 @@ L1fae:
 	m.push(m.cs)
 	m.push(0)
 	m.drawPlayerCrosshair()
-	m.alu("sub", m.r16(m.ss, (m.bp+-22)&65535), 1, 16)
+	m.alu(opSub, m.r16(m.ss, (m.bp+-22)&65535), 1, 16)
 	if !m.z {
 		goto L1fab
 	}
 	m.ax = (m.r16(m.ss, (m.bp+-30)&65535)) & 65535
-	m.ax = (m.alu("sub", m.ax, m.r16(m.ss, (m.bp+-6)&65535), 16)) & 65535
-	m.ax = (m.alu("or", m.ax, m.ax, 16)) & 65535
+	m.ax = (m.alu(opSub, m.ax, m.r16(m.ss, (m.bp+-6)&65535), 16)) & 65535
+	m.ax = (m.alu(opOr, m.ax, m.ax, 16)) & 65535
 	if !m.s {
 		goto L1ffe
 	}
-	m.ax = (m.alu("sub", 0, m.ax, 16)) & 65535
+	m.ax = (m.alu(opSub, 0, m.ax, 16)) & 65535
 L1ffe:
 	m.clock(16)
-	m.ax = (m.alu("add", m.ax, m.r16(m.ss, (m.bp+-28)&65535), 16)) & 65535
+	m.ax = (m.alu(opAdd, m.ax, m.r16(m.ss, (m.bp+-28)&65535), 16)) & 65535
 	m.clock(16)
-	m.ax = (m.alu("sub", m.ax, m.r16(m.ss, (m.bp+-4)&65535), 16)) & 65535
+	m.ax = (m.alu(opSub, m.ax, m.r16(m.ss, (m.bp+-4)&65535), 16)) & 65535
 	m.dx = 0
 	if m.ax&32768 != 0 {
 		m.dx = 65535
@@ -969,8 +969,8 @@ L1ffe:
 	m.di = (30146) & 65535
 	m.runtime(0x6ea, 0xc8d)
 	m.runtime(0x6ea, 0xcad)
-	m.ax = (m.alu("add", m.ax, 1, 16)) & 65535
-	m.dx = (m.alu("adc", m.dx, 0, 16)) & 65535
+	m.ax = (m.alu(opAdd, m.ax, 1, 16)) & 65535
+	m.dx = (m.alu(opAdc, m.dx, 0, 16)) & 65535
 	m.w16(m.ss, (m.bp+-12)&65535, m.ax)
 	m.ax = (m.r16(m.ss, (m.bp+-12)&65535)) & 65535
 	m.dx = 0
@@ -983,7 +983,7 @@ L1ffe:
 	m.push(m.bx)
 	m.push(m.ax)
 	m.ax = (m.r16(m.ss, (m.bp+-28)&65535)) & 65535
-	m.ax = (m.alu("sub", m.ax, m.r16(m.ss, (m.bp+-4)&65535), 16)) & 65535
+	m.ax = (m.alu(opSub, m.ax, m.r16(m.ss, (m.bp+-4)&65535), 16)) & 65535
 	m.dx = 0
 	if m.ax&32768 != 0 {
 		m.dx = 65535
@@ -1007,7 +1007,7 @@ L1ffe:
 	m.push(m.bx)
 	m.push(m.ax)
 	m.ax = (m.r16(m.ss, (m.bp+-30)&65535)) & 65535
-	m.ax = (m.alu("sub", m.ax, m.r16(m.ss, (m.bp+-6)&65535), 16)) & 65535
+	m.ax = (m.alu(opSub, m.ax, m.r16(m.ss, (m.bp+-6)&65535), 16)) & 65535
 	m.dx = 0
 	if m.ax&32768 != 0 {
 		m.dx = 65535
@@ -1024,7 +1024,7 @@ L1ffe:
 	m.ax = (m.r16(m.ss, (m.bp+-12)&65535)) & 65535
 	m.w16(m.ss, (m.bp+-44)&65535, m.ax)
 	m.ax = (1) & 65535
-	m.alu("sub", m.ax, m.r16(m.ss, (m.bp+-44)&65535), 16)
+	m.alu(opSub, m.ax, m.r16(m.ss, (m.bp+-44)&65535), 16)
 	if m.z || m.s != m.o {
 		goto L2089
 	}
@@ -1039,12 +1039,12 @@ L208e:
 L2091:
 	m.clock(16)
 	m.ax = (m.r16(m.ds, (5530)&65535)) & 65535
-	m.cx = (m.alu("xor", m.cx, m.cx, 16)) & 65535
+	m.cx = (m.alu(opXor, m.cx, m.cx, 16)) & 65535
 	m.ax = (m.shift(m.ax, (m.cx & 255), 16, true)) & 65535
 	m.dx = (m.ax) & 65535
 	m.ax = (200) & 65535
-	m.ax = (m.alu("sub", m.ax, m.dx, 16)) & 65535
-	m.dx = (m.alu("xor", m.dx, m.dx, 16)) & 65535
+	m.ax = (m.alu(opSub, m.ax, m.dx, 16)) & 65535
+	m.dx = (m.alu(opXor, m.dx, m.dx, 16)) & 65535
 	m.cx = (m.ax) & 65535
 	m.bx = (m.dx) & 65535
 	m.ax = (m.r16(m.ds, (5518)&65535)) & 65535
@@ -1077,8 +1077,8 @@ L2091:
 	if m.ax&32768 != 0 {
 		m.dx = 65535
 	}
-	m.ax = (m.alu("add", m.ax, m.cx, 16)) & 65535
-	m.dx = (m.alu("adc", m.dx, m.bx, 16)) & 65535
+	m.ax = (m.alu(opAdd, m.ax, m.cx, 16)) & 65535
+	m.dx = (m.alu(opAdc, m.dx, m.bx, 16)) & 65535
 	m.clock(16)
 	m.push(m.ax)
 	m.ax = (m.r16(m.ss, (m.bp+-22)&65535)) & 65535
@@ -1099,11 +1099,11 @@ L2091:
 	if m.ax&32768 != 0 {
 		m.dx = 65535
 	}
-	m.ax = (m.alu("add", m.ax, m.cx, 16)) & 65535
-	m.dx = (m.alu("adc", m.dx, m.bx, 16)) & 65535
+	m.ax = (m.alu(opAdd, m.ax, m.cx, 16)) & 65535
+	m.dx = (m.alu(opAdc, m.dx, m.bx, 16)) & 65535
 	m.clock(16)
-	m.ax = (m.alu("add", m.ax, 3, 16)) & 65535
-	m.dx = (m.alu("adc", m.dx, 0, 16)) & 65535
+	m.ax = (m.alu(opAdd, m.ax, 3, 16)) & 65535
+	m.dx = (m.alu(opAdc, m.dx, 0, 16)) & 65535
 	m.push(m.ax)
 	m.ax = (11) & 65535
 	m.push(m.ax)
@@ -1112,7 +1112,7 @@ L2091:
 	m.push(0)
 	m.drawPlayerCrosshair()
 	m.ax = (m.r16(m.ss, (m.bp+-22)&65535)) & 65535
-	m.alu("sub", m.ax, m.r16(m.ss, (m.bp+-44)&65535), 16)
+	m.alu(opSub, m.ax, m.r16(m.ss, (m.bp+-44)&65535), 16)
 	if m.z {
 		goto L2128
 	}
@@ -1130,8 +1130,8 @@ L2134:
 	m.ax = (2000) & 65535
 	m.push(m.ax)
 	m.runtime(0x6ea, 0xcc7)
-	m.ax = (m.alu("add", m.ax, 1000, 16)) & 65535
-	m.dx = (m.alu("xor", m.dx, m.dx, 16)) & 65535
+	m.ax = (m.alu(opAdd, m.ax, 1000, 16)) & 65535
+	m.dx = (m.alu(opXor, m.dx, m.dx, 16)) & 65535
 	m.cx = (m.ax) & 65535
 	m.bx = (m.dx) & 65535
 	m.ax = (m.r16(m.ds, (5518)&65535)) & 65535
@@ -1153,11 +1153,11 @@ L2134:
 		m.dx = 65535
 	}
 	m.cx = (4) & 65535
-	m.product("idiv", m.cx)
+	m.product(opIdiv, m.cx)
 	m.ax = (m.step(m.ax, 1, 16)) & 65535
 	m.push(m.ax)
 	m.runtime(0x688, 0x29e)
-	m.alu("sub", m.r16(m.ds, (5558)&65535), 10, 16)
+	m.alu(opSub, m.r16(m.ds, (5558)&65535), 10, 16)
 	m.clock(16)
 	if !m.z {
 		goto L2130
@@ -1167,10 +1167,10 @@ L2134:
 	m.cx = (m.ax) & 65535
 	m.ax = (m.r16(m.ss, (m.bp+-8)&65535)) & 65535
 	m.dx = (24) & 65535
-	m.product("mul", m.dx)
+	m.product(opMul, m.dx)
 	m.di = (m.ax) & 65535
-	m.di = (m.alu("add", m.di, m.cx, 16)) & 65535
-	m.alu("sub", m.r16(m.ds, (m.di+4782)&65535), 0, 16)
+	m.di = (m.alu(opAdd, m.di, m.cx, 16)) & 65535
+	m.alu(opSub, m.r16(m.ds, (m.di+4782)&65535), 0, 16)
 	if !m.z && m.s == m.o {
 		goto L2197
 	}
@@ -1183,10 +1183,10 @@ L2197:
 	m.cx = (m.ax) & 65535
 	m.ax = (m.r16(m.ss, (m.bp+-8)&65535)) & 65535
 	m.dx = (24) & 65535
-	m.product("mul", m.dx)
+	m.product(opMul, m.dx)
 	m.di = (m.ax) & 65535
-	m.di = (m.alu("add", m.di, m.cx, 16)) & 65535
-	m.alu("sub", m.r16(m.ds, (m.di+4782)&65535), 100, 16)
+	m.di = (m.alu(opAdd, m.di, m.cx, 16)) & 65535
+	m.alu(opSub, m.r16(m.ds, (m.di+4782)&65535), 100, 16)
 	if m.s != m.o {
 		goto L21b4
 	}
@@ -1201,9 +1201,9 @@ L21b4:
 	m.cx = (m.ax) & 65535
 	m.ax = (m.r16(m.ss, (m.bp+-8)&65535)) & 65535
 	m.dx = (24) & 65535
-	m.product("mul", m.dx)
+	m.product(opMul, m.dx)
 	m.di = (m.ax) & 65535
-	m.di = (m.alu("add", m.di, m.cx, 16)) & 65535
+	m.di = (m.alu(opAdd, m.di, m.cx, 16)) & 65535
 	m.ax = (m.r16(m.ds, (m.di+4782)&65535)) & 65535
 	m.w16(m.ds, (5558)&65535, m.ax)
 	m.ax = (m.r16(m.ss, (m.bp+-10)&65535)) & 65535
@@ -1211,27 +1211,27 @@ L21b4:
 	m.cx = (m.ax) & 65535
 	m.ax = (m.r16(m.ss, (m.bp+-8)&65535)) & 65535
 	m.dx = (24) & 65535
-	m.product("mul", m.dx)
+	m.product(opMul, m.dx)
 	m.clock(16)
 	m.di = (m.ax) & 65535
-	m.di = (m.alu("add", m.di, m.cx, 16)) & 65535
+	m.di = (m.alu(opAdd, m.di, m.cx, 16)) & 65535
 	m.ax = (m.r16(m.ds, (m.di+4782)&65535)) & 65535
-	m.ax = (m.alu("add", m.ax, 100, 16)) & 65535
+	m.ax = (m.alu(opAdd, m.ax, 100, 16)) & 65535
 	m.bx = (m.ax) & 65535
 	m.ax = (m.r16(m.ss, (m.bp+-10)&65535)) & 65535
 	m.ax = (m.shift(m.ax, 1, 16, true)) & 65535
 	m.cx = (m.ax) & 65535
 	m.ax = (m.r16(m.ss, (m.bp+-8)&65535)) & 65535
 	m.dx = (24) & 65535
-	m.product("mul", m.dx)
+	m.product(opMul, m.dx)
 	m.di = (m.ax) & 65535
-	m.di = (m.alu("add", m.di, m.cx, 16)) & 65535
+	m.di = (m.alu(opAdd, m.di, m.cx, 16)) & 65535
 	m.w16(m.ds, (m.di+4782)&65535, m.bx)
 	m.di = (m.r16(m.ds, (5558)&65535)) & 65535
 	m.clock(16)
 	m.cx = (m.cx & 65280) | ((3) & 255)
 	m.di = (m.shift(m.di, (m.cx & 255), 16, true)) & 65535
-	m.di = (m.alu("add", m.di, 5350, 16)) & 65535
+	m.di = (m.alu(opAdd, m.di, 5350, 16)) & 65535
 	m.w16(m.ss, (m.bp+-46)&65535, m.di)
 	m.w16(m.ss, (m.bp+-44)&65535, m.ds)
 	m.temp = m.r16(m.ss, (m.bp+-46)&65535)
@@ -1241,7 +1241,7 @@ L21b4:
 	m.temp = m.r16(m.ss, (m.bp+-46)&65535)
 	m.es = m.r16(m.ss, ((m.bp+-46)&65535)+2)
 	m.di = (m.temp) & 65535
-	m.alu("sub", m.r8(m.es, (m.di+3)&65535), 0, 8)
+	m.alu(opSub, m.r8(m.es, (m.di+3)&65535), 0, 8)
 	if m.z {
 		goto L222f
 	}
@@ -1251,7 +1251,7 @@ L222f:
 	m.temp = m.r16(m.ss, (m.bp+-46)&65535)
 	m.es = m.r16(m.ss, ((m.bp+-46)&65535)+2)
 	m.di = (m.temp) & 65535
-	m.alu("sub", m.r8(m.es, (m.di+2)&65535), 0, 8)
+	m.alu(opSub, m.r8(m.es, (m.di+2)&65535), 0, 8)
 	m.clock(16)
 	if !m.z {
 		goto L226e
@@ -1261,24 +1261,24 @@ L222f:
 	m.di = (m.temp) & 65535
 	m.ax = (m.r16(m.es, (m.di+4)&65535)) & 65535
 	m.cx = (14) & 65535
-	m.product("imul", m.cx)
-	m.ax = (m.alu("add", m.ax, 151, 16)) & 65535
+	m.product(opImul, m.cx)
+	m.ax = (m.alu(opAdd, m.ax, 151, 16)) & 65535
 	m.w16(m.ds, (5520)&65535, m.ax)
 	m.temp = m.r16(m.ss, (m.bp+-46)&65535)
 	m.es = m.r16(m.ss, ((m.bp+-46)&65535)+2)
 	m.di = (m.temp) & 65535
 	m.ax = (m.r16(m.es, (m.di+6)&65535)) & 65535
 	m.cx = (14) & 65535
-	m.product("imul", m.cx)
-	m.ax = (m.alu("add", m.ax, 13, 16)) & 65535
+	m.product(opImul, m.cx)
+	m.ax = (m.alu(opAdd, m.ax, 13, 16)) & 65535
 	m.w16(m.ds, (5522)&65535, m.ax)
 	m.temp = m.r16(m.ss, (m.bp+-46)&65535)
 	m.es = m.r16(m.ss, ((m.bp+-46)&65535)+2)
 	m.di = (m.temp) & 65535
 	m.ax = (m.ax & 65280) | ((m.r8(m.es, (m.di+1)&65535)) & 255)
 	m.clock(16)
-	m.ax = (m.ax & 255) | (((m.alu("xor", (m.ax >> 8), (m.ax >> 8), 8)) & 255) << 8)
-	m.ax = (m.alu("add", m.ax, 44, 16)) & 65535
+	m.ax = (m.ax & 255) | (((m.alu(opXor, (m.ax >> 8), (m.ax >> 8), 8)) & 255) << 8)
+	m.ax = (m.alu(opAdd, m.ax, 44, 16)) & 65535
 	m.w16(m.ds, (5524)&65535, m.ax)
 	goto L22a1
 L226e:
@@ -1288,8 +1288,8 @@ L226e:
 	m.di = (m.temp) & 65535
 	m.ax = (m.r16(m.es, (m.di+4)&65535)) & 65535
 	m.cx = (14) & 65535
-	m.product("imul", m.cx)
-	m.ax = (m.alu("add", m.ax, 152, 16)) & 65535
+	m.product(opImul, m.cx)
+	m.ax = (m.alu(opAdd, m.ax, 152, 16)) & 65535
 	m.w16(m.ds, (5520)&65535, m.ax)
 	m.temp = m.r16(m.ss, (m.bp+-46)&65535)
 	m.es = m.r16(m.ss, ((m.bp+-46)&65535)+2)
@@ -1297,15 +1297,15 @@ L226e:
 	m.ax = (m.r16(m.es, (m.di+6)&65535)) & 65535
 	m.cx = (14) & 65535
 	m.clock(16)
-	m.product("imul", m.cx)
-	m.ax = (m.alu("add", m.ax, 9, 16)) & 65535
+	m.product(opImul, m.cx)
+	m.ax = (m.alu(opAdd, m.ax, 9, 16)) & 65535
 	m.w16(m.ds, (5522)&65535, m.ax)
 	m.temp = m.r16(m.ss, (m.bp+-46)&65535)
 	m.es = m.r16(m.ss, ((m.bp+-46)&65535)+2)
 	m.di = (m.temp) & 65535
 	m.ax = (m.ax & 65280) | ((m.r8(m.es, (m.di+1)&65535)) & 255)
-	m.ax = (m.ax & 255) | (((m.alu("xor", (m.ax >> 8), (m.ax >> 8), 8)) & 255) << 8)
-	m.ax = (m.alu("add", m.ax, 40, 16)) & 65535
+	m.ax = (m.ax & 255) | (((m.alu(opXor, (m.ax >> 8), (m.ax >> 8), 8)) & 255) << 8)
+	m.ax = (m.alu(opAdd, m.ax, 40, 16)) & 65535
 	m.w16(m.ds, (5524)&65535, m.ax)
 L22a1:
 	m.clock(16)
@@ -1332,7 +1332,7 @@ L22a1:
 	m.drawSprite()
 L22c9:
 	m.clock(16)
-	m.ax = (m.alu("xor", m.ax, m.ax, 16)) & 65535
+	m.ax = (m.alu(opXor, m.ax, m.ax, 16)) & 65535
 	m.clock(16)
 	m.w16(m.ss, (m.bp+-22)&65535, m.ax)
 	goto L22d3
@@ -1352,13 +1352,13 @@ L22df:
 	m.clock(16)
 	m.push(m.ax)
 	m.runtime(0x6ea, 0xcc7)
-	m.ax = (m.alu("add", m.ax, 100, 16)) & 65535
-	m.dx = (m.alu("xor", m.dx, m.dx, 16)) & 65535
+	m.ax = (m.alu(opAdd, m.ax, 100, 16)) & 65535
+	m.dx = (m.alu(opXor, m.dx, m.dx, 16)) & 65535
 	m.cx = (m.ax) & 65535
 	m.bx = (m.dx) & 65535
 	m.ax = (4) & 65535
-	m.ax = (m.alu("sub", m.ax, m.r16(m.ss, (m.bp+-22)&65535), 16)) & 65535
-	m.product("imul", m.r16(m.ds, (5518)&65535))
+	m.ax = (m.alu(opSub, m.ax, m.r16(m.ss, (m.bp+-22)&65535), 16)) & 65535
+	m.product(opImul, m.r16(m.ds, (5518)&65535))
 	m.dx = 0
 	if m.ax&32768 != 0 {
 		m.dx = 65535
@@ -1377,22 +1377,22 @@ L22df:
 		m.dx = 65535
 	}
 	m.cx = (2) & 65535
-	m.product("idiv", m.cx)
+	m.product(opIdiv, m.cx)
 	m.ax = (m.step(m.ax, 1, 16)) & 65535
 	m.push(m.ax)
 	m.runtime(0x688, 0x29e)
-	m.alu("sub", m.r16(m.ds, (5558)&65535), 10, 16)
+	m.alu(opSub, m.r16(m.ds, (5558)&65535), 10, 16)
 	if !m.z {
 		goto L22db
 	}
 	m.ax = (26) & 65535
 	m.push(m.ax)
 	m.ax = (m.r16(m.ss, (m.bp+-28)&65535)) & 65535
-	m.ax = (m.alu("add", m.ax, 2, 16)) & 65535
+	m.ax = (m.alu(opAdd, m.ax, 2, 16)) & 65535
 	m.clock(16)
 	m.push(m.ax)
 	m.ax = (m.r16(m.ss, (m.bp+-30)&65535)) & 65535
-	m.ax = (m.alu("sub", m.ax, 7, 16)) & 65535
+	m.ax = (m.alu(opSub, m.ax, 7, 16)) & 65535
 	m.push(m.ax)
 	m.ax = (11) & 65535
 	m.push(m.ax)
@@ -1400,7 +1400,7 @@ L22df:
 	m.push(m.cs)
 	m.push(0)
 	m.drawPlayerCrosshair()
-	m.alu("sub", m.r16(m.ss, (m.bp+-22)&65535), 3, 16)
+	m.alu(opSub, m.r16(m.ss, (m.bp+-22)&65535), 3, 16)
 	if !m.z {
 		goto L22d0
 	}
@@ -1409,7 +1409,7 @@ L234d:
 	goto L23e6
 L2350:
 	m.clock(16)
-	m.ax = (m.alu("xor", m.ax, m.ax, 16)) & 65535
+	m.ax = (m.alu(opXor, m.ax, m.ax, 16)) & 65535
 	m.w16(m.ss, (m.bp+-22)&65535, m.ax)
 	goto L235a
 L2357:
@@ -1420,10 +1420,10 @@ L235a:
 	m.ax = (25) & 65535
 	m.push(m.ax)
 	m.ax = (m.r16(m.ss, (m.bp+-28)&65535)) & 65535
-	m.ax = (m.alu("add", m.ax, 2, 16)) & 65535
+	m.ax = (m.alu(opAdd, m.ax, 2, 16)) & 65535
 	m.push(m.ax)
 	m.ax = (m.r16(m.ss, (m.bp+-30)&65535)) & 65535
-	m.ax = (m.alu("sub", m.ax, 7, 16)) & 65535
+	m.ax = (m.alu(opSub, m.ax, 7, 16)) & 65535
 	m.clock(16)
 	m.push(m.ax)
 	m.ax = (11) & 65535
@@ -1432,11 +1432,11 @@ L235a:
 	m.push(m.cs)
 	m.push(0)
 	m.drawPlayerCrosshair()
-	m.alu("sub", m.r16(m.ss, (m.bp+-22)&65535), 2, 16)
+	m.alu(opSub, m.r16(m.ss, (m.bp+-22)&65535), 2, 16)
 	if !m.z {
 		goto L2357
 	}
-	m.ax = (m.alu("xor", m.ax, m.ax, 16)) & 65535
+	m.ax = (m.alu(opXor, m.ax, m.ax, 16)) & 65535
 	m.w16(m.ss, (m.bp+-22)&65535, m.ax)
 	goto L2385
 L2382:
@@ -1448,13 +1448,13 @@ L2385:
 	m.push(m.ax)
 	m.ax = (m.r16(m.ss, (m.bp+-8)&65535)) & 65535
 	m.cx = (14) & 65535
-	m.product("imul", m.cx)
-	m.ax = (m.alu("add", m.ax, 159, 16)) & 65535
+	m.product(opImul, m.cx)
+	m.ax = (m.alu(opAdd, m.ax, 159, 16)) & 65535
 	m.push(m.ax)
 	m.ax = (m.r16(m.ss, (m.bp+-10)&65535)) & 65535
 	m.cx = (14) & 65535
-	m.product("imul", m.cx)
-	m.ax = (m.alu("add", m.ax, 22, 16)) & 65535
+	m.product(opImul, m.cx)
+	m.ax = (m.alu(opAdd, m.ax, 22, 16)) & 65535
 	m.push(m.ax)
 	m.ax = (11) & 65535
 	m.push(m.ax)
@@ -1463,7 +1463,7 @@ L2385:
 	m.push(m.cs)
 	m.push(0)
 	m.drawPlayerCrosshair()
-	m.alu("sub", m.r16(m.ss, (m.bp+-22)&65535), 3, 16)
+	m.alu(opSub, m.r16(m.ss, (m.bp+-22)&65535), 3, 16)
 	if !m.z {
 		goto L2382
 	}
@@ -1479,14 +1479,14 @@ L2385:
 	m.push(m.di)
 	m.ax = (m.r16(m.ss, (m.bp+-8)&65535)) & 65535
 	m.cx = (14) & 65535
-	m.product("imul", m.cx)
+	m.product(opImul, m.cx)
 	m.clock(16)
-	m.ax = (m.alu("add", m.ax, 159, 16)) & 65535
+	m.ax = (m.alu(opAdd, m.ax, 159, 16)) & 65535
 	m.push(m.ax)
 	m.ax = (m.r16(m.ss, (m.bp+-10)&65535)) & 65535
 	m.cx = (14) & 65535
-	m.product("imul", m.cx)
-	m.ax = (m.alu("add", m.ax, 22, 16)) & 65535
+	m.product(opImul, m.cx)
+	m.ax = (m.alu(opAdd, m.ax, 22, 16)) & 65535
 	m.push(m.ax)
 	m.ax = (11) & 65535
 	m.push(m.ax)
@@ -1507,8 +1507,8 @@ L23f2:
 	m.ax = (1000) & 65535
 	m.push(m.ax)
 	m.runtime(0x6ea, 0xcc7)
-	m.ax = (m.alu("add", m.ax, 100, 16)) & 65535
-	m.dx = (m.alu("xor", m.dx, m.dx, 16)) & 65535
+	m.ax = (m.alu(opAdd, m.ax, 100, 16)) & 65535
+	m.dx = (m.alu(opXor, m.dx, m.dx, 16)) & 65535
 	m.cx = (m.ax) & 65535
 	m.bx = (m.dx) & 65535
 	m.ax = (m.r16(m.ds, (5518)&65535)) & 65535
@@ -1530,26 +1530,26 @@ L23f2:
 		m.dx = 65535
 	}
 	m.cx = (4) & 65535
-	m.product("idiv", m.cx)
+	m.product(opIdiv, m.cx)
 	m.ax = (m.step(m.ax, 1, 16)) & 65535
 	m.push(m.ax)
 	m.runtime(0x688, 0x29e)
-	m.alu("sub", m.r16(m.ds, (5558)&65535), 20, 16)
+	m.alu(opSub, m.r16(m.ds, (5558)&65535), 20, 16)
 	m.clock(16)
 	if !m.z {
 		goto L23ee
 	}
 L2438:
 	m.clock(16)
-	m.alu("sub", m.r8(m.ds, (5570)&65535), 27, 8)
+	m.alu(opSub, m.r8(m.ds, (5570)&65535), 27, 8)
 	if m.z {
 		goto L2450
 	}
-	m.alu("sub", m.r16(m.ds, (5526)&65535), 2, 16)
+	m.alu(opSub, m.r16(m.ds, (5526)&65535), 2, 16)
 	if m.z {
 		goto L2450
 	}
-	m.alu("sub", m.r16(m.ds, (4474)&65535), 0, 16)
+	m.alu(opSub, m.r16(m.ds, (4474)&65535), 0, 16)
 	if m.z {
 		goto L2450
 	}

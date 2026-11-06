@@ -4,7 +4,7 @@ package main
 func (m *gameState) drawPlayerCrosshair() {
 	m.push(m.bp)
 	m.bp = (m.sp) & 65535
-	m.ax = (m.alu("xor", m.ax, m.ax, 16)) & 65535
+	m.ax = (m.alu(opXor, m.ax, m.ax, 16)) & 65535
 	m.runtime(0x6ea, 0x244)
 	m.ax = (m.ax & 65280) | ((5) & 255)
 	m.dx = (974) & 65535
@@ -51,7 +51,7 @@ func (m *gameState) drawPlayerCrosshair() {
 	m.drawSprite()
 	m.di = (m.r16(m.ss, (m.bp+6)&65535)) & 65535
 	m.clock(16)
-	m.alu("sub", m.r16(m.ss, (m.di+-14)&65535), 0, 16)
+	m.alu(opSub, m.r16(m.ss, (m.di+-14)&65535), 0, 16)
 	if !m.z && m.s == m.o {
 		goto L1845
 	}
@@ -62,7 +62,7 @@ L1845:
 	m.w16(m.ss, (m.di+-14)&65535, m.step(m.r16(m.ss, (m.di+-14)&65535), 1, 16))
 	m.di = (m.r16(m.ss, (m.bp+6)&65535)) & 65535
 	m.ax = (m.r16(m.ss, (m.di+-16)&65535)) & 65535
-	m.ax = (m.alu("add", m.ax, 2, 16)) & 65535
+	m.ax = (m.alu(opAdd, m.ax, 2, 16)) & 65535
 	m.di = (m.r16(m.ss, (m.bp+6)&65535)) & 65535
 	m.w16(m.ss, (m.di+-16)&65535, m.ax)
 	m.di = (m.r16(m.ss, (m.bp+6)&65535)) & 65535
@@ -72,7 +72,7 @@ L1845:
 	m.di = (m.r16(m.ss, (m.bp+6)&65535)) & 65535
 	m.w16(m.ss, (m.di+-18)&65535, m.ax)
 	m.di = (m.r16(m.ss, (m.bp+6)&65535)) & 65535
-	m.alu("sub", m.r16(m.ss, (m.di+-14)&65535), 10, 16)
+	m.alu(opSub, m.r16(m.ss, (m.di+-14)&65535), 10, 16)
 	if m.z || m.s != m.o {
 		goto L1881
 	}
@@ -87,12 +87,12 @@ L188a:
 	m.clock(16)
 	m.di = (m.r16(m.ss, (m.bp+6)&65535)) & 65535
 	m.clock(16)
-	m.alu("sub", m.r16(m.ss, (m.di+-14)&65535), 20, 16)
+	m.alu(opSub, m.r16(m.ss, (m.di+-14)&65535), 20, 16)
 	if m.z || m.s != m.o {
 		goto L189d
 	}
 	m.di = (m.r16(m.ss, (m.bp+6)&65535)) & 65535
-	m.ax = (m.alu("xor", m.ax, m.ax, 16)) & 65535
+	m.ax = (m.alu(opXor, m.ax, m.ax, 16)) & 65535
 	m.w16(m.ss, (m.di+-14)&65535, m.ax)
 L189d:
 	m.clock(16)
@@ -113,13 +113,13 @@ L189d:
 	m.push(m.di)
 	m.di = (m.r16(m.ss, (m.bp+6)&65535)) & 65535
 	m.ax = (m.r16(m.ss, (m.di+-16)&65535)) & 65535
-	m.ax = (m.alu("add", m.ax, 3, 16)) & 65535
+	m.ax = (m.alu(opAdd, m.ax, 3, 16)) & 65535
 	m.push(m.ax)
 	m.di = (m.r16(m.ss, (m.bp+6)&65535)) & 65535
 	m.ax = (m.r16(m.ss, (m.di+-18)&65535)) & 65535
-	m.ax = (m.alu("sub", m.ax, 2, 16)) & 65535
+	m.ax = (m.alu(opSub, m.ax, 2, 16)) & 65535
 	m.push(m.ax)
-	m.ax = (m.alu("xor", m.ax, m.ax, 16)) & 65535
+	m.ax = (m.alu(opXor, m.ax, m.ax, 16)) & 65535
 	m.push(m.ax)
 	m.push(m.cs)
 	m.clock(16)

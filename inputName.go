@@ -6,7 +6,7 @@ func (m *gameState) inputName() {
 	m.bp = (m.sp) & 65535
 	m.ax = (778) & 65535
 	m.runtime(0x6ea, 0x244)
-	m.sp = (m.alu("sub", m.sp, 778, 16)) & 65535
+	m.sp = (m.alu(opSub, m.sp, 778, 16)) & 65535
 	m.ax = (m.ax & 65280) | ((5) & 255)
 	m.dx = (974) & 65535
 	m.videoOut(m.dx, (m.ax & 255))
@@ -44,10 +44,10 @@ func (m *gameState) inputName() {
 	m.push(m.ax)
 	m.ax = (2) & 65535
 	m.push(m.ax)
-	m.ax = (m.alu("xor", m.ax, m.ax, 16)) & 65535
+	m.ax = (m.alu(opXor, m.ax, m.ax, 16)) & 65535
 	m.push(m.ax)
 	m.clock(16)
-	m.ax = (m.alu("xor", m.ax, m.ax, 16)) & 65535
+	m.ax = (m.alu(opXor, m.ax, m.ax, 16)) & 65535
 	m.push(m.ax)
 	m.si = (40960) & 65535
 	m.es = (m.si) & 65535
@@ -85,17 +85,17 @@ func (m *gameState) inputName() {
 	m.push(0)
 	m.drawTextCells()
 	m.w8(m.ss, (m.bp+-264)&65535, 0)
-	m.ax = (m.alu("xor", m.ax, m.ax, 16)) & 65535
+	m.ax = (m.alu(opXor, m.ax, m.ax, 16)) & 65535
 	m.w16(m.ss, (m.bp+-2)&65535, m.ax)
 L1131:
 	m.clock(16)
-	m.ax = (m.alu("xor", m.ax, m.ax, 16)) & 65535
+	m.ax = (m.alu(opXor, m.ax, m.ax, 16)) & 65535
 	m.w16(m.ss, (m.bp+-4)&65535, m.ax)
 	m.w8(m.ds, (5570)&65535, 7)
 L113b:
 	m.clock(16)
 	m.w16(m.ss, (m.bp+-4)&65535, m.step(m.r16(m.ss, (m.bp+-4)&65535), 1, 16))
-	m.alu("sub", m.r16(m.ss, (m.bp+-4)&65535), 10, 16)
+	m.alu(opSub, m.r16(m.ss, (m.bp+-4)&65535), 10, 16)
 	m.clock(16)
 	if m.s == m.o {
 		goto L114b
@@ -107,11 +107,11 @@ L114b:
 	m.w16(m.ss, (m.bp+-6)&65535, 7)
 L1150:
 	m.clock(16)
-	m.alu("sub", m.r16(m.ss, (m.bp+-4)&65535), 20, 16)
+	m.alu(opSub, m.r16(m.ss, (m.bp+-4)&65535), 20, 16)
 	if m.z || m.s != m.o {
 		goto L115b
 	}
-	m.ax = (m.alu("xor", m.ax, m.ax, 16)) & 65535
+	m.ax = (m.alu(opXor, m.ax, m.ax, 16)) & 65535
 	m.w16(m.ss, (m.bp+-4)&65535, m.ax)
 L115b:
 	m.clock(16)
@@ -125,7 +125,7 @@ L115b:
 	m.runtime(0x6ea, 0x612)
 	m.ax = (m.r16(m.ss, (m.bp+-2)&65535)) & 65535
 	m.ax = (m.shift(m.ax, 1, 16, true)) & 65535
-	m.ax = (m.alu("add", m.ax, 11, 16)) & 65535
+	m.ax = (m.alu(opAdd, m.ax, 11, 16)) & 65535
 	m.push(m.ax)
 	m.ax = (7) & 65535
 	m.push(m.ax)
@@ -154,11 +154,11 @@ L115b:
 	m.push(m.di)
 	m.runtime(0x681, 0xb)
 	m.runtime(0x688, 0x2fa)
-	m.ax = (m.ax & 65280) | ((m.alu("or", (m.ax & 255), (m.ax & 255), 8)) & 255)
+	m.ax = (m.ax & 65280) | ((m.alu(opOr, (m.ax & 255), (m.ax & 255), 8)) & 255)
 	if !m.z {
 		goto L11bf
 	}
-	m.alu("sub", m.r16(m.ds, (5538)&65535), 0, 16)
+	m.alu(opSub, m.r16(m.ds, (5538)&65535), 0, 16)
 	if !m.c && !m.z {
 		goto L11bf
 	}
@@ -173,14 +173,14 @@ L11c6:
 L11c9:
 	m.clock(16)
 	m.ax = (m.r16(m.ss, (m.bp+-8)&65535)) & 65535
-	m.product("imul", m.r16(m.ss, (m.bp+-8)&65535))
+	m.product(opImul, m.r16(m.ss, (m.bp+-8)&65535))
 	m.cx = (2) & 65535
 	m.ax = (m.shift(m.ax, (m.cx & 255), 16, true)) & 65535
-	m.ax = (m.alu("add", m.ax, 20, 16)) & 65535
-	m.product("imul", m.r16(m.ds, (5518)&65535))
+	m.ax = (m.alu(opAdd, m.ax, 20, 16)) & 65535
+	m.product(opImul, m.r16(m.ds, (5518)&65535))
 	m.push(m.ax)
 	m.runtime(0x688, 0x2c6)
-	m.alu("sub", m.r16(m.ss, (m.bp+-8)&65535), 20, 16)
+	m.alu(opSub, m.r16(m.ss, (m.bp+-8)&65535), 20, 16)
 	if !m.z {
 		goto L11c6
 	}
@@ -195,7 +195,7 @@ L11c9:
 	m.runtime(0x6ea, 0x612)
 	m.ax = (m.r16(m.ss, (m.bp+-2)&65535)) & 65535
 	m.ax = (m.shift(m.ax, 1, 16, true)) & 65535
-	m.ax = (m.alu("add", m.ax, 11, 16)) & 65535
+	m.ax = (m.alu(opAdd, m.ax, 11, 16)) & 65535
 	m.push(m.ax)
 	m.ax = (7) & 65535
 	m.push(m.ax)
@@ -215,7 +215,7 @@ L11c9:
 	m.push(0)
 	m.drawTextCells()
 	m.runtime(0x688, 0x2fa)
-	m.ax = (m.ax & 65280) | ((m.alu("or", (m.ax & 255), (m.ax & 255), 8)) & 255)
+	m.ax = (m.ax & 65280) | ((m.alu(opOr, (m.ax & 255), (m.ax & 255), 8)) & 255)
 	if m.z {
 		goto L123a
 	}
@@ -268,16 +268,16 @@ L124d:
 	m.runtime(0x6ea, 0x742)
 	m.ax = (m.r16(m.ss, (m.bp+-2)&65535)) & 65535
 	m.ax = (m.shift(m.ax, 1, 16, true)) & 65535
-	m.ax = (m.alu("add", m.ax, 11, 16)) & 65535
+	m.ax = (m.alu(opAdd, m.ax, 11, 16)) & 65535
 	m.push(m.ax)
 	m.ax = (5) & 65535
 	m.push(m.ax)
 	m.clock(16)
 	m.ax = (2) & 65535
 	m.push(m.ax)
-	m.ax = (m.alu("xor", m.ax, m.ax, 16)) & 65535
+	m.ax = (m.alu(opXor, m.ax, m.ax, 16)) & 65535
 	m.push(m.ax)
-	m.ax = (m.alu("xor", m.ax, m.ax, 16)) & 65535
+	m.ax = (m.alu(opXor, m.ax, m.ax, 16)) & 65535
 	m.push(m.ax)
 	m.si = (40960) & 65535
 	m.es = (m.si) & 65535
@@ -296,7 +296,7 @@ L124d:
 	m.runtime(0x6ea, 0x742)
 	m.ax = (m.r16(m.ss, (m.bp+-2)&65535)) & 65535
 	m.ax = (m.shift(m.ax, 1, 16, true)) & 65535
-	m.ax = (m.alu("add", m.ax, 11, 16)) & 65535
+	m.ax = (m.alu(opAdd, m.ax, 11, 16)) & 65535
 	m.push(m.ax)
 	m.ax = (4) & 65535
 	m.push(m.ax)
@@ -320,7 +320,7 @@ L124d:
 	m.w16(m.ss, (m.bp+-2)&65535, m.ax)
 L12f2:
 	m.clock(16)
-	m.alu("sub", m.r8(m.ds, (5570)&65535), 8, 8)
+	m.alu(opSub, m.r8(m.ds, (5570)&65535), 8, 8)
 	if m.z {
 		goto L12fc
 	}
@@ -328,7 +328,7 @@ L12f2:
 	goto L13a3
 L12fc:
 	m.clock(16)
-	m.alu("sub", m.r16(m.ss, (m.bp+-2)&65535), 0, 16)
+	m.alu(opSub, m.r16(m.ss, (m.bp+-2)&65535), 0, 16)
 	if !m.z && m.s == m.o {
 		goto L1305
 	}
@@ -367,7 +367,7 @@ L1305:
 	m.runtime(0x6ea, 0x612)
 	m.ax = (m.r16(m.ss, (m.bp+-2)&65535)) & 65535
 	m.ax = (m.shift(m.ax, 1, 16, true)) & 65535
-	m.ax = (m.alu("add", m.ax, 11, 16)) & 65535
+	m.ax = (m.alu(opAdd, m.ax, 11, 16)) & 65535
 	m.push(m.ax)
 	m.ax = (5) & 65535
 	m.push(m.ax)
@@ -396,7 +396,7 @@ L1305:
 	m.runtime(0x6ea, 0x612)
 	m.ax = (m.r16(m.ss, (m.bp+-2)&65535)) & 65535
 	m.ax = (m.shift(m.ax, 1, 16, true)) & 65535
-	m.ax = (m.alu("add", m.ax, 11, 16)) & 65535
+	m.ax = (m.alu(opAdd, m.ax, 11, 16)) & 65535
 	m.push(m.ax)
 	m.ax = (4) & 65535
 	m.push(m.ax)
@@ -417,34 +417,34 @@ L1305:
 	m.drawTextCells()
 L13a3:
 	m.clock(16)
-	m.alu("sub", m.r16(m.ss, (m.bp+-2)&65535), 9, 16)
+	m.alu(opSub, m.r16(m.ss, (m.bp+-2)&65535), 9, 16)
 	if !m.z && m.s == m.o {
 		goto L13c7
 	}
-	m.alu("sub", m.r8(m.ds, (5570)&65535), 13, 8)
+	m.alu(opSub, m.r8(m.ds, (5570)&65535), 13, 8)
 	if m.z {
 		goto L13b7
 	}
-	m.alu("sub", m.r16(m.ds, (5538)&65535), 0, 16)
+	m.alu(opSub, m.r16(m.ds, (5538)&65535), 0, 16)
 	if m.c || m.z {
 		goto L13bd
 	}
 L13b7:
 	m.clock(16)
-	m.alu("sub", m.r16(m.ss, (m.bp+-2)&65535), 2, 16)
+	m.alu(opSub, m.r16(m.ss, (m.bp+-2)&65535), 2, 16)
 	if !m.z && m.s == m.o {
 		goto L13c7
 	}
 L13bd:
 	m.clock(16)
-	m.alu("sub", m.r8(m.ds, (5570)&65535), 27, 8)
+	m.alu(opSub, m.r8(m.ds, (5570)&65535), 27, 8)
 	if m.z {
 		goto L13c7
 	}
 	goto L1131
 L13c7:
 	m.clock(16)
-	m.alu("sub", m.r8(m.ds, (5570)&65535), 27, 8)
+	m.alu(opSub, m.r8(m.ds, (5570)&65535), 27, 8)
 	if !m.z {
 		goto L13d2
 	}
@@ -462,12 +462,12 @@ L13d2:
 	m.ax = (10) & 65535
 	m.push(m.ax)
 	m.runtime(0x6ea, 0x62c)
-	m.ax = (m.alu("xor", m.ax, m.ax, 16)) & 65535
+	m.ax = (m.alu(opXor, m.ax, m.ax, 16)) & 65535
 	m.w16(m.ss, (m.bp+-4)&65535, m.ax)
 	m.ax = (m.r16(m.ds, (4468)&65535)) & 65535
 	m.w16(m.ss, (m.bp+-268)&65535, m.ax)
 	m.ax = (1) & 65535
-	m.alu("sub", m.ax, m.r16(m.ss, (m.bp+-268)&65535), 16)
+	m.alu(opSub, m.ax, m.r16(m.ss, (m.bp+-268)&65535), 16)
 	if !m.z && m.s == m.o {
 		goto L142e
 	}
@@ -481,9 +481,9 @@ L1403:
 	m.clock(16)
 	m.ax = (m.r16(m.ss, (m.bp+-2)&65535)) & 65535
 	m.dx = (17) & 65535
-	m.product("mul", m.dx)
+	m.product(opMul, m.dx)
 	m.di = (m.ax) & 65535
-	m.di = (m.alu("add", m.di, 106, 16)) & 65535
+	m.di = (m.alu(opAdd, m.di, 106, 16)) & 65535
 	m.push(m.ds)
 	m.push(m.di)
 	m.di = (4482) & 65535
@@ -499,7 +499,7 @@ L1403:
 L1425:
 	m.clock(16)
 	m.ax = (m.r16(m.ss, (m.bp+-2)&65535)) & 65535
-	m.alu("sub", m.ax, m.r16(m.ss, (m.bp+-268)&65535), 16)
+	m.alu(opSub, m.ax, m.r16(m.ss, (m.bp+-268)&65535), 16)
 	if !m.z {
 		goto L1400
 	}

@@ -4,7 +4,7 @@ package main
 func (m *gameState) initGraphics() {
 	m.push(m.bp)
 	m.bp = (m.sp) & 65535
-	m.ax = (m.alu("xor", m.ax, m.ax, 16)) & 65535
+	m.ax = (m.alu(opXor, m.ax, m.ax, 16)) & 65535
 	m.runtime(0x6ea, 0x244)
 	m.w16(m.ds, (5536)&65535, 13)
 	m.ax = (m.ax & 65280) | ((16) & 255)

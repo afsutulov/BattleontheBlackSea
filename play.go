@@ -4,17 +4,17 @@ package main
 func (m *gameState) play() {
 	m.push(m.bp)
 	m.bp = (m.sp) & 65535
-	m.ax = (m.alu("xor", m.ax, m.ax, 16)) & 65535
+	m.ax = (m.alu(opXor, m.ax, m.ax, 16)) & 65535
 	m.runtime(0x6ea, 0x244)
 	m.w16(m.ds, (4458)&65535, 5)
 	m.w16(m.ds, (4460)&65535, 5)
 	m.w16(m.ds, (4462)&65535, 1)
 	m.w16(m.ds, (4464)&65535, 1)
-	m.ax = (m.alu("xor", m.ax, m.ax, 16)) & 65535
+	m.ax = (m.alu(opXor, m.ax, m.ax, 16)) & 65535
 	m.w16(m.ds, (4466)&65535, m.ax)
 L2ff2:
 	m.clock(16)
-	m.alu("sub", m.r16(m.ds, (5526)&65535), 1, 16)
+	m.alu(opSub, m.r16(m.ds, (5526)&65535), 1, 16)
 	if !m.z {
 		goto L2fff
 	}
@@ -29,15 +29,15 @@ L2fff:
 	m.computerTurn()
 L3003:
 	m.clock(16)
-	m.alu("sub", m.r8(m.ds, (5570)&65535), 27, 8)
+	m.alu(opSub, m.r8(m.ds, (5570)&65535), 27, 8)
 	if m.z {
 		goto L3018
 	}
-	m.alu("sub", m.r16(m.ds, (4472)&65535), 0, 16)
+	m.alu(opSub, m.r16(m.ds, (4472)&65535), 0, 16)
 	if m.z {
 		goto L3018
 	}
-	m.alu("sub", m.r16(m.ds, (4474)&65535), 0, 16)
+	m.alu(opSub, m.r16(m.ds, (4474)&65535), 0, 16)
 	m.clock(16)
 	if !m.z {
 		goto L2ff2

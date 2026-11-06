@@ -42,6 +42,10 @@ type gameState struct {
 	seed                                                 uint32
 	closing                                              bool
 	failure                                              error
+	// untimed > 0 while drawing must not consume emulated CPU time.
+	untimed int
+	// pcm is reused for every audio frame: soundStream.append copies it.
+	pcm [800 * 4]byte
 }
 type legacyFile struct {
 	name        string
@@ -148,7 +152,31 @@ func (m *gameState) w8(seg, off, value int) {
 func (m *gameState) w16(seg, off, v int) { m.w8(seg, off, v); m.w8(seg, off+1, v>>8) }
 func (m *gameState) push(v int)          { m.sp = (m.sp - 2) & 65535; m.w16(m.ss, m.sp, v) }
 func (m *gameState) pop() int            { v := m.r16(m.ss, m.sp); m.sp = (m.sp + 2) & 65535; return v }
-func (m *gameState) alu(op string, a, b, bits int) int {
+
+// aluOp and mulOp select the operation of alu and product. They replace the
+// former string arguments, which were compared on every emulated instruction.
+type aluOp uint8
+
+const (
+	opAdd aluOp = iota
+	opAdc
+	opSub
+	opSbb
+	opAnd
+	opOr
+	opXor
+)
+
+type mulOp uint8
+
+const (
+	opMul mulOp = iota
+	opImul
+	opDiv
+	opIdiv
+)
+
+func (m *gameState) alu(op aluOp, a, b, bits int) int {
 	mask := (1 << bits) - 1
 	sign := 1 << (bits - 1)
 	a &= mask
@@ -159,29 +187,29 @@ func (m *gameState) alu(op string, a, b, bits int) int {
 		carry = 1
 	}
 	switch op {
-	case "add", "adc":
-		if op == "adc" {
+	case opAdd, opAdc:
+		if op == opAdc {
 			b += carry
 		}
 		r = a + b
 		m.c = r > mask
 		m.o = (^(a ^ b) & (a ^ r) & sign) != 0
-	case "sub", "sbb":
-		if op == "sbb" {
+	case opSub, opSbb:
+		if op == opSbb {
 			b += carry
 		}
 		r = a - b
 		m.c = a < b
 		m.o = ((a ^ b) & (a ^ r) & sign) != 0
-	case "and":
+	case opAnd:
 		r = a & b
 		m.c = false
 		m.o = false
-	case "or":
+	case opOr:
 		r = a | b
 		m.c = false
 		m.o = false
-	case "xor":
+	case opXor:
 		r = a ^ b
 		m.c = false
 		m.o = false
@@ -193,7 +221,7 @@ func (m *gameState) alu(op string, a, b, bits int) int {
 }
 func (m *gameState) step(v, n, bits int) int {
 	c := m.c
-	r := m.alu("add", v, n, bits)
+	r := m.alu(opAdd, v, n, bits)
 	m.c = c
 	return r
 }
@@ -202,35 +230,35 @@ func (m *gameState) shift(v, n, bits int, left bool) int {
 	if n == 0 {
 		return v
 	}
-	mask := (1 << bits) - 1
-	for i := 0; i < n; i++ {
-		if left {
-			m.c = v&(1<<(bits-1)) != 0
-			v = (v << 1) & mask
-		} else {
-			m.c = v&1 != 0
-			v >>= 1
-		}
+	// Equivalent to shifting one bit n times: the carry is the last bit
+	// shifted out.
+	if left {
+		mask := (1 << bits) - 1
+		m.c = n <= bits && v&(1<<(bits-n)) != 0
+		v = (v << n) & mask
+	} else {
+		m.c = (v>>(n-1))&1 != 0
+		v >>= n
 	}
 	m.z = v == 0
 	m.s = v&(1<<(bits-1)) != 0
 	return v
 }
-func (m *gameState) product(op string, v int) {
+func (m *gameState) product(op mulOp, v int) {
 	switch op {
-	case "mul":
+	case opMul:
 		p := uint32(m.ax) * uint32(v)
 		m.ax = int(p & 65535)
 		m.dx = int(p >> 16)
-	case "imul":
+	case opImul:
 		p := int32(int16(m.ax)) * int32(int16(v))
 		m.ax = int(uint32(p) & 65535)
 		m.dx = int(uint32(p) >> 16)
-	case "div":
+	case opDiv:
 		p := uint32(m.dx)<<16 | uint32(m.ax)
 		m.ax = int(p/uint32(v)) & 65535
 		m.dx = int(p % uint32(v))
-	case "idiv":
+	case opIdiv:
 		p := int32(uint32(m.dx)<<16 | uint32(m.ax))
 		d := int32(int16(v))
 		m.ax = int(p/d) & 65535
@@ -657,23 +685,36 @@ func (m *gameState) run() {
 
 var ega = [16][3]byte{{0, 0, 0}, {0, 0, 170}, {0, 170, 0}, {0, 170, 170}, {170, 0, 0}, {170, 0, 170}, {170, 85, 0}, {170, 170, 170}, {85, 85, 85}, {85, 85, 255}, {85, 255, 85}, {85, 255, 255}, {255, 85, 85}, {255, 85, 255}, {255, 255, 85}, {255, 255, 255}}
 
-func (m *gameState) yield() {
-	for y := 0; y < 200; y++ {
-		for x := 0; x < 320; x++ {
-			off := y*40 + x/8
-			bit := byte(128 >> uint(x&7))
-			c := 0
-			for p := 0; p < 4; p++ {
-				if m.planes[p][off]&bit != 0 {
-					c |= 1 << p
-				}
-			}
-			i := (y*320 + x) * 4
-			copy(m.pixels[i:i+3], ega[c][:])
-			m.pixels[i+3] = 255
+// egaRGBA is ega with an opaque alpha channel, ready to be copied as a pixel.
+var egaRGBA = func() (t [16][4]byte) {
+	for i, c := range ega {
+		t[i] = [4]byte{c[0], c[1], c[2], 255}
+	}
+	return
+}()
+
+// planarToRGBA converts the 4 EGA bit planes (40 bytes per line, 8 pixels per
+// byte) of the 320x200 screen into RGBA pixels.
+func (m *gameState) planarToRGBA() {
+	p0, p1, p2, p3 := &m.planes[0], &m.planes[1], &m.planes[2], &m.planes[3]
+	px := m.pixels[:]
+	for off := 0; off < 8000; off++ {
+		b0, b1, b2, b3 := p0[off], p1[off], p2[off], p3[off]
+		i := off * 32
+		for bit := 7; bit >= 0; bit-- {
+			c := (b0>>bit)&1 | ((b1>>bit)&1)<<1 | ((b2>>bit)&1)<<2 | ((b3>>bit)&1)<<3
+			copy(px[i:i+4], egaRGBA[c][:])
+			i += 4
 		}
 	}
-	m.frames <- frame{pixels: append([]byte(nil), m.pixels[:]...), frequency: m.frequency, duration: 1.0 / 60, pcm: m.audioFrame()}
+}
+
+func (m *gameState) yield() {
+	m.planarToRGBA()
+	// The window thread copies the pixels and PCM in Update before it sends
+	// the next resume, and this goroutine waits for that resume, so both
+	// buffers can be reused without copying them for every frame.
+	m.frames <- frame{pixels: m.pixels[:], frequency: m.frequency, duration: 1.0 / 60, pcm: m.audioFrame()}
 	in := <-m.resume
 	m.keys = append(m.keys, in.keys...)
 	m.mouseX = in.mouseX
@@ -709,7 +750,7 @@ func (m *gameState) advance(seconds float64) {
 }
 func (m *gameState) pause(seconds float64) { m.advance(seconds) }
 func (m *gameState) clock(cycles int) {
-	if m.closing {
+	if m.closing || m.untimed > 0 {
 		return
 	}
 	m.advance(float64(cycles) / 3000000)
@@ -718,8 +759,15 @@ func (m *gameState) tone(frequency int) {
 	m.frequency = frequency
 	m.toneEvents = append(m.toneEvents, toneEvent{m.elapsed, frequency})
 }
+
+// drawSpriteUntimed draws a sprite like drawSprite but takes no emulated time.
+func (m *gameState) drawSpriteUntimed() {
+	m.untimed++
+	defer func() { m.untimed-- }()
+	m.drawSprite()
+}
 func (m *gameState) audioFrame() []byte {
-	pcm := make([]byte, 800*4)
+	pcm := m.pcm[:]
 	frequency := m.toneBase
 	event := 0
 	for i := 0; i < 800; i++ {

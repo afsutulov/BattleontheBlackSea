@@ -31,6 +31,14 @@ func repeated(k ebiten.Key) bool {
 	n := inpututil.KeyPressDuration(k)
 	return n == 1 || (n >= 24 && n%3 == 0)
 }
+
+// specialKeys maps non-character keys to the DOS BIOS codes the game reads
+// (256 + scan code for extended keys).
+var specialKeys = []struct {
+	key  ebiten.Key
+	code int
+}{{ebiten.KeyEnter, 13}, {ebiten.KeyNumpadEnter, 13}, {ebiten.KeyEscape, 27}, {ebiten.KeyBackspace, 8}, {ebiten.KeyTab, 9}, {ebiten.KeyArrowUp, 256 + 72}, {ebiten.KeyArrowDown, 256 + 80}, {ebiten.KeyArrowLeft, 256 + 75}, {ebiten.KeyArrowRight, 256 + 77}, {ebiten.KeyInsert, 256 + 82}, {ebiten.KeyPageDown, 256 + 81}, {ebiten.KeyF1, 256 + 59}}
+
 func (a *application) Update() error {
 	if inpututil.IsKeyJustPressed(ebiten.KeyF11) || (inpututil.IsKeyJustPressed(ebiten.KeyEnter) && ebiten.IsKeyPressed(ebiten.KeyAlt)) {
 		ebiten.SetFullscreen(!ebiten.IsFullscreen())
@@ -41,11 +49,7 @@ func (a *application) Update() error {
 			keys = append(keys, int(r))
 		}
 	}
-	special := []struct {
-		key  ebiten.Key
-		code int
-	}{{ebiten.KeyEnter, 13}, {ebiten.KeyNumpadEnter, 13}, {ebiten.KeyEscape, 27}, {ebiten.KeyBackspace, 8}, {ebiten.KeyTab, 9}, {ebiten.KeyArrowUp, 256 + 72}, {ebiten.KeyArrowDown, 256 + 80}, {ebiten.KeyArrowLeft, 256 + 75}, {ebiten.KeyArrowRight, 256 + 77}, {ebiten.KeyInsert, 256 + 82}, {ebiten.KeyPageDown, 256 + 81}, {ebiten.KeyF1, 256 + 59}}
-	for _, k := range special {
+	for _, k := range specialKeys {
 		if repeated(k.key) {
 			if k.key == ebiten.KeyEnter && ebiten.IsKeyPressed(ebiten.KeyAlt) {
 				continue
